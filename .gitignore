@@ -1,0 +1,116 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# VS Code
+.vscode/
+
+# Data and model files
+*.h5
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.npz
+*.npy
+
+# User data
+*.sqlite3
+*.db
+*.log
+*.csv
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Local config
+.env
+.env.*
+*.local
+
+# Project-specific
+/data/
+/output/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Anaconda/conda environments
+.conda/
+*.conda
+*.env
+venv/
+# Ignore backup files
+*~
+*.orig
+*.rej
+
+# Ignore test artifacts
+/test_outputs/
+
+# Ignore PyCharm
+.idea/
+videos/
+__pycache__
+ui/__pycache__
+ui/stats_components/__pycache__
+core/__pycache__
