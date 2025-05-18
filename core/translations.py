@@ -307,6 +307,36 @@ class Translations:
             "zh": "视频已加载: ",
             "en": "Video loaded: "
         },
+        
+        # 模型相关
+        "model_type": {
+            "zh": "模型选择:",
+            "en": "Model:"
+        },
+        "model_small": {
+            "zh": "小型模型 (更快)",
+            "en": "Small Model (Faster)"
+        },
+        "model_large": {
+            "zh": "大型模型 (更准)",
+            "en": "Large Model (More Accurate)"
+        },
+        "changing_model": {
+            "zh": "正在切换模型到",
+            "en": "Changing model to"
+        },
+        "model_changed_to": {
+            "zh": "模型已切换为",
+            "en": "Model changed to"
+        },
+        "model_change_failed": {
+            "zh": "模型切换失败",
+            "en": "Model change failed"
+        },
+        "severe_error": {
+            "zh": "发生严重错误，请重启应用",
+            "en": "Severe error occurred, please restart application"
+        },
     }
     
     @classmethod

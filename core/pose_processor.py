@@ -12,6 +12,12 @@ class PoseProcessor:
         # 获取设备信息，用于模型推理
         self.device = model.device
     
+    def update_model(self, new_model):
+        """更新模型"""
+        self.model = new_model
+        self.device = new_model.device
+        print(f"Pose processor updated with new model on device: {self.device}")
+    
     def process_frame(self, frame, exercise_type):
         """处理单帧图像进行姿态检测和运动计数"""
         # 尺寸检查，如果帧太大则缩小
@@ -142,12 +148,12 @@ class PoseProcessor:
                 [12, 14], [14, 16]  # 右臂-右膝-右蹄
             ]
             
-            # 定义颜色 (RGB) - 更亮更炫酷的配色
+            # 定义颜色 (RGB) - 更明亮、更鲜艳的配色
             colors = {
-                'head': (102, 204, 204),    
-                'torso': (66,185,131),    
-                'arms': (204, 255, 153),  
-                'legs': (204, 255, 255)   
+                'head': (255, 153, 51),    # 明亮的橙色
+                'torso': (51, 153, 255),   # 鲜艳的蓝色
+                'arms': (255, 51, 153),    # 亮粉色
+                'legs': (153, 255, 51)     # 亮绿色
             }
             
             # 绘制关键点 (使用光晕效果)

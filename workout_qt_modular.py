@@ -31,9 +31,12 @@ class WorkoutTrackerApp(QMainWindow):
         # 检查GPU可用性并设置设备
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
+        # 设置默认模型
+        self.model_file = 'yolo11n-pose.pt'
+        
         # 加载YOLO模型并指定设备
         print(f"Loading model on {self.device}...")
-        self.model = YOLO('yolo11n-pose.pt').to(self.device)
+        self.model = YOLO(self.model_file).to(self.device)
         
         # 创建运动计数器实例
         self.exercise_counter = ExerciseCounter()
@@ -130,6 +133,7 @@ class WorkoutTrackerApp(QMainWindow):
         self.control_panel.camera_changed.connect(self.change_camera)
         self.control_panel.rotation_toggled.connect(self.toggle_rotation)
         self.control_panel.skeleton_toggled.connect(self.toggle_skeleton)
+        self.control_panel.model_changed.connect(self.change_model)  # 连接模型切换信号
         
         # 连接新增的按钮信号
         self.control_panel.counter_increase.connect(self.increase_counter)
@@ -667,6 +671,60 @@ class WorkoutTrackerApp(QMainWindow):
             
             # 更新状态栏信息
             self.statusBar.showMessage(T.get("language_changed"))
+
+    def change_model(self, model_file):
+        """切换模型"""
+        try:
+            if model_file == self.model_file:
+                # 如果是同一个模型文件，不需要重新加载
+                return
+                
+            # 停止视频处理
+            self.video_thread.stop()
+            
+            # 显示状态信息
+            self.statusBar.showMessage(f"{T.get('changing_model')} {model_file}...")
+            
+            # 更新模型文件名
+            self.model_file = model_file
+            
+            # 释放旧模型资源
+            if hasattr(self, 'model'):
+                del self.model
+                import torch
+                torch.cuda.empty_cache()  # 清理GPU显存
+            
+            # 加载新模型
+            print(f"Loading new model {model_file} on {self.device}...")
+            self.model = YOLO(model_file).to(self.device)
+            
+            # 更新姿态处理器
+            self.pose_processor.update_model(self.model)
+            
+            # 重新初始化视频线程，而不是仅仅启动旧线程
+            self.setup_video_thread()
+            
+            # 重新开始视频处理
+            QTimer.singleShot(500, self.start_video)  # 延迟500毫秒再启动视频
+            
+            # 更新状态栏
+            self.statusBar.showMessage(f"{T.get('model_changed_to')} {model_file}")
+            
+        except Exception as e:
+            # 如果切换失败，显示错误信息
+            error_msg = f"{T.get('model_change_failed')}: {str(e)}"
+            self.statusBar.showMessage(error_msg)
+            print(error_msg)
+            
+            # 尝试回退到原来的模型
+            try:
+                self.model = YOLO(self.model_file).to(self.device)
+                self.pose_processor.update_model(self.model)
+                self.setup_video_thread()  # 同样需要重新初始化视频线程
+                QTimer.singleShot(500, self.start_video)
+            except:
+                # 如果回退也失败，显示严重错误
+                self.statusBar.showMessage(T.get('severe_error'))
 
 
 if __name__ == "__main__":

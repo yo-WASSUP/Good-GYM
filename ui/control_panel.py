@@ -18,6 +18,7 @@ class ControlPanel(QWidget):
     counter_increase = pyqtSignal(int)
     counter_decrease = pyqtSignal(int)
     record_confirmed = pyqtSignal(str)
+    model_changed = pyqtSignal(str)  # 添加模型切换信号
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -35,6 +36,12 @@ class ControlPanel(QWidget):
             "knee_raise": T.get("knee_raise"),
             "left_knee_press": T.get("left_knee_press"),
             "right_knee_press": T.get("right_knee_press")
+        }
+        
+        # 初始化模型类型映射
+        self.model_display_map = {
+            "yolo11n-pose.pt": T.get("model_small"),
+            "yolo11s-pose.pt": T.get("model_large")
         }
         
         # 初始化反向映射
@@ -114,11 +121,12 @@ class ControlPanel(QWidget):
         self.controls_group = QGroupBox(T.get("control_options"))
         self.controls_group.setStyleSheet(AppStyles.get_group_box_style())
         controls_layout = QVBoxLayout(self.controls_group)
+        controls_layout.setSpacing(12)  # 增加整体布局间距
         
         # 运动类型选择
         exercise_layout = QHBoxLayout()
         self.exercise_label = QLabel(T.get("exercise_type"))
-        self.exercise_label.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold;")
+        self.exercise_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
         self.exercise_combo = QComboBox()
         
         # 设置下拉菜单的样式
@@ -139,10 +147,30 @@ class ControlPanel(QWidget):
         exercise_layout.addWidget(self.exercise_combo, 1)
         controls_layout.addLayout(exercise_layout)
         
+        # 模型选择
+        model_layout = QHBoxLayout()
+        self.model_label = QLabel(T.get("model_type"))
+        self.model_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
+        
+        self.model_combo = QComboBox()
+        self.model_combo.setStyleSheet(AppStyles.get_exercise_combo_style())
+        
+        # 添加模型选项
+        for model_code, model_display in self.model_display_map.items():
+            self.model_combo.addItem(model_display, model_code)
+            
+        # 设置默认模型为yolo11n (小模型)
+        self.model_combo.setCurrentIndex(0)
+        self.model_combo.currentIndexChanged.connect(self._on_model_changed)
+        
+        model_layout.addWidget(self.model_label)
+        model_layout.addWidget(self.model_combo, 1)
+        controls_layout.addLayout(model_layout)
+        
         # 摄像头选择
         camera_layout = QHBoxLayout()
         self.camera_label = QLabel(T.get("camera"))
-        self.camera_label.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold;")
+        self.camera_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
         
         self.camera_combo = QComboBox()
         self.camera_combo.addItems(["0", "1"])
@@ -360,6 +388,13 @@ class ControlPanel(QWidget):
         # 发送信号
         self.skeleton_toggled.emit(checked)
     
+    def _on_model_changed(self, index):
+        """模型类型改变处理"""
+        # 获取当前选中的模型文件名
+        model_file = self.model_combo.currentData()
+        # 发出信号通知主应用程序
+        self.model_changed.emit(model_file)
+    
     def update_counter(self, value):
         """更新计数值"""
         old_count = int(self.counter_value.text() or "0")
@@ -488,50 +523,7 @@ class ControlPanel(QWidget):
         
     def update_language(self):
         """更新界面语言"""
-        # 更新标题
-        self.title_label.setText(T.get("app_title"))
-        
-        # 更新组标题
-        self.info_group.setTitle(T.get("exercise_data"))
-        self.controls_group.setTitle(T.get("control_options"))
-        self.phase_group.setTitle(T.get("phase_display"))
-        
-        # 更新标签
-        self.counter_label.setText(T.get("count_completed"))
-        # self.angle_label.setText(T.get("current_angle"))
-        self.exercise_label.setText(T.get("exercise_type"))
-        self.phase_title.setText(T.get("current_phase"))
-        
-        # 更新按钮文本
-        self.increase_button.setText(T.get("increase"))
-        self.decrease_button.setText(T.get("decrease"))
-        self.reset_button.setText(T.get("reset"))
-        self.confirm_button.setText(T.get("confirm"))
-        
-        # 更新摄像头标签
-        self.camera_label.setText(T.get("camera"))
-        
-        # 更新阶段值文本
-        current_stage = self.stage_value.text()
-        if current_stage in ["上升", "Up"]:
-            self.stage_value.setText(T.get("up"))
-        elif current_stage in ["下降", "Down"]:
-            self.stage_value.setText(T.get("down"))
-        else:
-            self.stage_value.setText(T.get("prepare"))
-            
-        # 更新自定义开关文本
-        if hasattr(self, 'rotation_switch'):
-            self.rotation_switch.setText(T.get("rotation_mode") + ":")
-            
-        if hasattr(self, 'skeleton_switch'):
-            self.skeleton_switch.setText(T.get("skeleton_display") + ":")
-        
-        # 更新运动类型下拉菜单
-        selected_item = self.exercise_combo.currentText()
-        self.exercise_combo.clear()
-        
-        # 重新构建运动类型映射
+        # 更新运动类型映射
         self.exercise_display_map = {
             "overhead_press": T.get("overhead_press"),
             "bicep_curl": T.get("bicep_curl"),
@@ -545,15 +537,66 @@ class ControlPanel(QWidget):
             "right_knee_press": T.get("right_knee_press")
         }
         
-        # 重新构建反向映射
+        # 更新模型类型映射
+        self.model_display_map = {
+            "yolo11n-pose.pt": T.get("model_small"),
+            "yolo11s-pose.pt": T.get("model_large")
+        }
+        
+        # 更新反向映射
         self.exercise_code_map = {v: k for k, v in self.exercise_display_map.items()}
         
-        # 重新填充下拉菜单
-        for code, display in self.exercise_display_map.items():
-            self.exercise_combo.addItem(display)
+        # 更新UI文本
+        self.title_label.setText(T.get("app_title"))
+        self.controls_group.setTitle(T.get("control_options"))
+        self.info_group.setTitle(T.get("exercise_data"))
+        self.phase_group.setTitle(T.get("motion_detection"))
+        
+        self.counter_label.setText(T.get("count_completed"))
+        self.exercise_label.setText(T.get("exercise_type"))
+        self.model_label.setText(T.get("model_type"))  # 添加模型标签翻译
+        self.camera_label.setText(T.get("camera"))
+        
+        # 更新开关文本
+        self.rotation_switch.label.setText(T.get("rotation_mode"))
+        self.skeleton_switch.label.setText(T.get("skeleton_display"))
+        
+        # 更新按钮文本
+        self.increase_button.setText(T.get("increase"))
+        self.decrease_button.setText(T.get("decrease"))
+        self.reset_button.setText(T.get("reset"))
+        self.confirm_button.setText(T.get("confirm"))
+        
+        # 更新阶段标签
+        self.phase_value.setText(T.get(self.current_phase) if hasattr(self, "current_phase") else "")
+        
+        # 更新组合框
+        self._update_combo_items(self.exercise_combo, self.exercise_display_map)
+        self._update_combo_items(self.model_combo, self.model_display_map)  # 更新模型选择框
+
+    def _update_combo_items(self, combo_box, item_map):
+        """更新组合框内容"""
+        # 保存当前选择的数据
+        current_data = combo_box.currentData()
+        current_text = combo_box.currentText()
+        
+        # 清空组合框
+        combo_box.clear()
+        
+        # 重新填充选项
+        for code, display in item_map.items():
+            combo_box.addItem(display, code)
         
         # 尝试恢复先前选中的项
-        for i in range(self.exercise_combo.count()):
-            if self.exercise_combo.itemText(i) == selected_item:
-                self.exercise_combo.setCurrentIndex(i)
-                break
+        if current_data:
+            # 如果有数据，根据数据恢复
+            for i in range(combo_box.count()):
+                if combo_box.itemData(i) == current_data:
+                    combo_box.setCurrentIndex(i)
+                    break
+        elif current_text:
+            # 否则尝试根据文本恢复
+            for i in range(combo_box.count()):
+                if combo_box.itemText(i) == current_text:
+                    combo_box.setCurrentIndex(i)
+                    break

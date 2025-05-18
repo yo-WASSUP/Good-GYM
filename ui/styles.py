@@ -80,11 +80,12 @@ class AppStyles:
         """获取运动选择下拉框样式"""
         return """
             QComboBox {
-                font-size: 14pt;
-                padding: 6px 12px;
-                min-height: 40px;
+                font-size: 12pt;
+                padding: 2px 8px;
+                min-height: 28px;
+                max-height: 28px;
                 border: 2px solid #bdc3c7;
-                border-radius: 10px;
+                border-radius: 8px;
                 background-color: #ffffff;
             }
             QComboBox:hover {
@@ -92,13 +93,13 @@ class AppStyles:
             }
             QComboBox::drop-down {
                 border: 0px;
-                width: 30px;
+                width: 20px;
             }
             QComboBox QAbstractItemView {
                 border: 2px solid #bdc3c7;
                 border-radius: 6px;
                 selection-background-color: #3498db;
-                font-size: 14pt;
+                font-size: 12pt;
             }
         """
     
@@ -205,8 +206,9 @@ class AppStyles:
         return """
             QComboBox {
                 font-size: 12pt;
-                padding: 6px 12px;
-                min-height: 36px;
+                padding: 2px 8px;
+                min-height: 28px;
+                max-height: 28px;
                 border: 2px solid #bdc3c7;
                 border-radius: 8px;
                 background-color: #ffffff;
@@ -216,7 +218,7 @@ class AppStyles:
             }
             QComboBox::drop-down {
                 border: 0px;
-                width: 25px;
+                width: 20px;
             }
             QComboBox QAbstractItemView {
                 border: 2px solid #bdc3c7;

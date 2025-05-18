@@ -24,6 +24,7 @@
 - **Real-time Exercise Counting** - Automatically counts your repetitions
 - **Multiple Exercise Support** - Including squats, push-ups, sit-ups, bicep curls, and many more
 - **Advanced Pose Detection** - Powered by YOLOv11 for accurate tracking
+- **Model Switching** - Easily switch between small (faster) and large (more accurate) YOLOv11 models
 - **Visual Feedback** - Live skeleton visualization with angle measurements
 - **Workout Statistics** - Track your progress over time
 - **User-friendly Interface** - Clean PyQt5 GUI with intuitive controls
@@ -42,6 +43,9 @@
 ### Controls
 
 - Use the interface buttons to select different exercises
+- Switch between models using the model selector:
+  - **Small Model (Faster)**: Uses yolo11n-pose.pt for faster performance on lower-end hardware
+  - **Large Model (More Accurate)**: Uses yolo11s-pose.pt for more accurate pose detection
 - Real-time feedback shows your current form and repetition count
 - Press the "Reset" button to reset the counter
 - Use manual adjustment buttons to correct the count if needed
