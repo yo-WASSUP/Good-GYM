@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Good-GYM 标志](assets/Logo-ch.png) 
+<img src="assets/Logo-ch.png" width="200px" alt="Good-GYM 标志">
 
 [![GitHub stars](https://img.shields.io/github/stars/yo-WASSUP/Good-GYM?style=social)](https://github.com/yo-WASSUP/Good-GYM/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/yo-WASSUP/Good-GYM?style=social)](https://github.com/yo-WASSUP/Good-GYM/network/members)
@@ -12,10 +12,13 @@
 
 [English](README.md) | [中文](README_CN.md)
 
+[![小红书视频介绍](https://img.shields.io/badge/小红书-视频介绍-ff2442)](https://www.xiaohongshu.com/explore/6808b102000000001c0157ad?xsec_token=ABm-Sdk88be4nJCaCVfCI9gQahnLiKt16mUC3gbupYH3g=&xsec_source=pc_user)
+
 </div>
 
 ---
-![截图1](assets/screenshot-ch-1.png) 
+<img src="assets/demo.gif" width="600px" alt="演示">
+
 ## ✨ 功能特点
 
 - **实时运动计数** - 自动计算您的健身次数
@@ -159,15 +162,15 @@
 
 ## 🖼️ 应用截图
 
-![截图1](assets/screenshot-ch-1.png) 
+<img src="assets/Screenshot-ch-1.png" width="600px" alt="截图1">
 
-![截图2](assets/screenshot-ch-2.png)
+<img src="assets/Screenshot-ch-2.png" width="600px" alt="截图2">
 
-![截图1](assets/screenshot-ch-3.png) 
+<img src="assets/Screenshot-ch-3.png" width="600px" alt="截图3">
 
-![截图2](assets/screenshot-ch-4.png)
+<img src="assets/Screenshot-ch-4.png" width="600px" alt="截图4">
 
-![截图1](assets/screenshot-ch-5.png) 
+<img src="assets/Screenshot-ch-5.png" width="600px" alt="截图5">
 
 ## 🤝 贡献
 

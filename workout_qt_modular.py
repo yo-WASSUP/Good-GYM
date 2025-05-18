@@ -391,8 +391,8 @@ class WorkoutTrackerApp(QMainWindow):
             <li>美观的用户界面和多语言支持</li>
         </ul>
         <p>作者：Spike Don</p>
-        <p>GitHub：https://github.com/yo-WASSUP/Good-GYM</p>
-        <p>小红书：https://www.xiaohongshu.com/user/profile/669560000000000000000000</p>
+        <p>GitHub：<a href="https://github.com/yo-WASSUP/Good-GYM">Good-GYM</a></p>
+        <p>小红书：<a href="https://www.xiaohongshu.com/user/profile/5fdf34b50000000001008057?xsec_token=&xsec_source=pc_note">想吃好果汁</a></p>
         """
         
         QMessageBox.about(self, T.get("about_title"), about_text)

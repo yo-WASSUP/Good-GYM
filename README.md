@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Good-GYM Logo](assets/Logo.png)
+<img src="assets/Logo.png" width="200px" alt="Good-GYM Logo">
 
 [![GitHub stars](https://img.shields.io/github/stars/yo-WASSUP/Good-GYM?style=social)](https://github.com/yo-WASSUP/Good-GYM/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/yo-WASSUP/Good-GYM?style=social)](https://github.com/yo-WASSUP/Good-GYM/network/members)
@@ -12,10 +12,13 @@
 
 [English](README.md) | [中文](README_CN.md)
 
+[![LinkedIn introduction](https://img.shields.io/badge/LinkedIn-介绍-0077B5)](https://www.linkedin.com/posts/huihuang-tang_ai-computervision-opencv-activity-7325469166591770624-Bbyx?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD7qaoMBbw89mcxb0dNh_O4ezc8EFShoOtU)
+
 </div>
 
 ---
-![截图1](assets/screenshot-en-1.png) 
+<img src="assets/demo.gif" width="600px" alt="演示">
+
 ## 🌟 Features
 
 - **Real-time Exercise Counting** - Automatically counts your repetitions
@@ -188,15 +191,15 @@
 
 ## 🖼️ Screenshots
 
-![截图1](assets/screenshot-en-1.png) 
+<img src="assets/Screenshot-en-1.png" width="600px" alt="Screenshot 1">
 
-![截图2](assets/screenshot-en-2.png)
+<img src="assets/Screenshot-en-2.png" width="600px" alt="Screenshot 2">
 
-![截图1](assets/screenshot-en-3.png) 
+<img src="assets/Screenshot-en-3.png" width="600px" alt="Screenshot 3">
 
-![截图2](assets/screenshot-en-4.png)
+<img src="assets/Screenshot-en-4.png" width="600px" alt="Screenshot 4">
 
-![截图1](assets/screenshot-en-5.png) 
+<img src="assets/Screenshot-en-5.png" width="600px" alt="Screenshot 5">
 
 ## 🤝 Contributing
 
