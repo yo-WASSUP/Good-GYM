@@ -34,120 +34,16 @@
 
 - Python 3.7+
 - 摄像头
-- 推荐使用GPU以获得更好性能(但CPU也可运行)
+- **Windows系统**: 必须有NVIDIA GPU (至少4GB显存)，暂不支持CPU模式
+- **Mac/Linux系统**: 可以使用CPU模式运行，但速度较慢
 
 ## 📦 快速下载
 
 - 如果您不想配置Python环境，可以直接下载我们打包好的可执行文件：
 
   **Windows EXE打包版本**：[百度网盘链接](https://pan.baidu.com/s/your_shared_link) 提取码：xxxx
-
-## 🚀 快速安装
-
-1. **克隆仓库**
-   ```bash
-   git clone https://github.com/yo-WASSUP/Good-GYM.git
-   cd Good-GYM
-   ```
-
-2. **创建并激活虚拟环境**
-   ```bash
-   # Windows系统
-   python -m venv venv
-   .\venv\Scripts\activate
-
-   # Linux/MacOS系统
-   python -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **安装依赖**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **运行应用**
-   ```bash
-   python workout_qt_modular.py
-   ```
-
-## 🔧 高级安装指南
-
-### GPU版本安装（推荐）
-
-1. **确保您的系统满足要求**
-   - NVIDIA GPU卡（建议4GB以上显存）
-   - 已安装最新NVIDIA驱动
-
-2. **安装CUDA和cuDNN**
-   - 下载并安装[CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
-   - 下载并安装[cuDNN](https://developer.nvidia.com/cudnn)
-
-3. **克隆并安装**
-   ```bash
-   git clone https://github.com/yo-WASSUP/Good-GYM.git
-   cd Good-GYM
-   
-   # 创建虚拟环境
-   python -m venv venv
-   # Windows激活环境
-   .\venv\Scripts\activate
-   # Linux/MacOS激活环境
-   source venv/bin/activate
-   
-   # 安装GPU版PyTorch
-   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-   
-   # 安装其他依赖
-   pip install -r requirements.txt
-   ```
-
-4. **验证GPU可用性**
-   ```bash
-   python -c "import torch; print('GPU可用:',torch.cuda.is_available())"
-   ```
-
-5. **运行应用**
-   ```bash
-   python workout_qt_modular.py
-   ```
-
-6. **创建可执行文件**
-   ```powershell
-   
-   # 或创建可执行文件
-   .\build_executable.bat
-   ```
-
-### Linux/MacOS安装
-
-1. **安装依赖**
-   ```bash
-   # Ubuntu/Debian系统
-   sudo apt-get update
-   sudo apt-get install python-pip python-dev python-opencv
-   
-   # MacOS系统
-   brew install python
-   ```
-
-2. **克隆并安装**
-   ```bash
-   git clone https://github.com/yo-WASSUP/Good-GYM.git
-   cd Good-GYM
-   
-   # 创建虚拟环境
-   python -m venv venv
-   source venv/bin/activate
-   
-   # 安装依赖
-   pip install -r requirements.txt
-   ```
-
-3. **运行应用**
-   ```bash
-   python workout_qt_modular.py
-   ```
+  
+  **注意**: Windows版本需要NVIDIA GPU和适当的驱动程序才能运行
 
 ## 📝 使用指南
 
@@ -171,6 +67,77 @@
 <img src="assets/Screenshot-ch-4.png" width="600px" alt="截图4">
 
 <img src="assets/Screenshot-ch-5.png" width="600px" alt="截图5">
+
+## 🚀 安装指南
+
+### Windows GPU版本安装 (必需)
+
+1. **确保您的系统满足要求**
+   - NVIDIA GPU卡（建议4GB以上显存）
+   - 已安装最新NVIDIA驱动
+
+2. **安装CUDA和cuDNN**
+   - 下载并安装[CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)（建议使用11.8版本）
+   - 下载并安装[cuDNN](https://developer.nvidia.com/cudnn)
+
+3. **克隆并安装**
+   ```bash
+   git clone https://github.com/yo-WASSUP/Good-GYM.git
+   cd Good-GYM
+   
+   # 创建虚拟环境
+   python -m venv venv
+   # Windows激活环境
+   .\venv\Scripts\activate
+   
+   # 安装GPU版PyTorch
+   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+   
+   # 安装其他依赖
+   pip install -r requirements.txt
+   ```
+
+4. **验证GPU可用性**
+   ```bash
+   python -c "import torch; print('GPU可用:',torch.cuda.is_available())"
+   ```
+
+5. **运行应用**
+   ```bash
+   python workout_qt_modular.py
+   ```
+
+6. **创建可执行文件**
+   ```powershell
+   # 创建可执行文件
+   .\build_executable.bat
+   ```
+
+### Mac安装 (CPU版本)
+
+1. **安装依赖**
+   ```bash
+   # MacOS系统
+   brew install python
+   ```
+
+2. **克隆并安装**
+   ```bash
+   git clone https://github.com/yo-WASSUP/Good-GYM.git
+   cd Good-GYM
+   
+   # 创建虚拟环境
+   python3 -m venv venv
+   source venv/bin/activate
+   
+   # 安装依赖
+   pip install -r requirements.txt
+   ```
+
+3. **运行应用**
+   ```bash
+   python workout_qt_modular.py
+   ```
 
 ## 🤝 贡献
 

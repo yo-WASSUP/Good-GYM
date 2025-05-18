@@ -99,6 +99,8 @@ Thumbs.db
 *.conda
 *.env
 venv/
+gpu_env/
+
 # Ignore backup files
 *~
 *.orig
