@@ -42,7 +42,7 @@
 
 - 如果您不想配置Python环境，可以直接下载我们打包好的可执行文件：
 
-  **Windows EXE打包版本**：[百度网盘链接](https://pan.baidu.com/s/your_shared_link) 提取码：xxxx
+  **Windows EXE打包版本**：[百度网盘链接]( https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) 提取码: 8866
   
   **注意**: Windows版本需要NVIDIA GPU和适当的驱动程序才能运行
 
