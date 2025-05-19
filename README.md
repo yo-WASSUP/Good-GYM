@@ -17,9 +17,9 @@
 </div>
 
 ---
-<img src="assets/demo.gif" width="800px" alt="演示">
+<img src="assets/demo-en.gif" width="800px" alt="演示">
 
-<img src="assets/demo-status.gif" width="800px" alt="演示">
+<img src="assets/demo-status-en.gif" width="800px" alt="演示">
 
 ## 🌟 Features
 
@@ -59,17 +59,6 @@
 - Toggle skeleton visualization on/off
 - View your workout statistics over time
 
-## 🖼️ Screenshots
-
-<img src="assets/Screenshot-en-1.png" width="600px" alt="Screenshot 1">
-
-<img src="assets/Screenshot-en-2.png" width="600px" alt="Screenshot 2">
-
-<img src="assets/Screenshot-en-3.png" width="600px" alt="Screenshot 3">
-
-<img src="assets/Screenshot-en-4.png" width="600px" alt="Screenshot 4">
-
-<img src="assets/Screenshot-en-5.png" width="600px" alt="Screenshot 5">
 
 ## 📋 Requirements
 
@@ -148,6 +137,18 @@
    ```bash
    python workout_qt_modular.py
    ```
+
+## 🖼️ Screenshots
+
+<img src="assets/Screenshot-en-1.png" width="600px" alt="Screenshot 1">
+
+<img src="assets/Screenshot-en-2.png" width="600px" alt="Screenshot 2">
+
+<img src="assets/Screenshot-en-3.png" width="600px" alt="Screenshot 3">
+
+<img src="assets/Screenshot-en-4.png" width="600px" alt="Screenshot 4">
+
+<img src="assets/Screenshot-en-5.png" width="600px" alt="Screenshot 5">
 
 ## 🤝 Contributing
 

@@ -554,7 +554,7 @@ class ControlPanel(QWidget):
         
         self.counter_label.setText(T.get("count_completed"))
         self.exercise_label.setText(T.get("exercise_type"))
-        self.model_label.setText(T.get("model_type"))  # 添加模型标签翻译
+        self.model_label.setText(T.get("model_type"))  
         self.camera_label.setText(T.get("camera"))
         
         # 更新开关文本
@@ -568,7 +568,7 @@ class ControlPanel(QWidget):
         self.confirm_button.setText(T.get("confirm"))
         
         # 更新阶段标签
-        self.phase_value.setText(T.get(self.current_phase) if hasattr(self, "current_phase") else "")
+        self.phase_title.setText(T.get(self.current_phase) if hasattr(self, "current_phase") else "")
         
         # 更新组合框
         self._update_combo_items(self.exercise_combo, self.exercise_display_map)

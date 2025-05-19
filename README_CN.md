@@ -66,18 +66,6 @@
 - 开关骨骼可视化
 - 查看您的健身统计数据
 
-## 🖼️ 应用截图
-
-<img src="assets/Screenshot-ch-1.png" width="600px" alt="截图1">
-
-<img src="assets/Screenshot-ch-2.png" width="600px" alt="截图2">
-
-<img src="assets/Screenshot-ch-3.png" width="600px" alt="截图3">
-
-<img src="assets/Screenshot-ch-4.png" width="600px" alt="截图4">
-
-<img src="assets/Screenshot-ch-5.png" width="600px" alt="截图5">
-
 ## 🚀 安装指南
 
 ### Windows GPU版本安装 (必需)
@@ -148,6 +136,17 @@
    ```bash
    python workout_qt_modular.py
    ```
+## 🖼️ 应用截图
+
+<img src="assets/Screenshot-ch-1.png" width="600px" alt="截图1">
+
+<img src="assets/Screenshot-ch-2.png" width="600px" alt="截图2">
+
+<img src="assets/Screenshot-ch-3.png" width="600px" alt="截图3">
+
+<img src="assets/Screenshot-ch-4.png" width="600px" alt="截图4">
+
+<img src="assets/Screenshot-ch-5.png" width="600px" alt="截图5">
 
 ## 🤝 贡献
 
