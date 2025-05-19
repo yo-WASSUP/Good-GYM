@@ -34,7 +34,12 @@
 ## 📦 Direct Download
 - If you don't want to set up a Python environment, you can download our pre-packaged executable:
 
-  **Windows EXE package**: [Baidu Netdisk Link](https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) code: 8866
+  **Windows EXE package**: 
+
+  [Baidu Netdisk Link](https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) code: 8866
+  
+  [Google Drive](https://drive.google.com/file/d/1KkNHAu6TAE8QzcyFxLG9K9qmzuRwHJFf/view?usp=drive_link)
+
   
   **Note**: Windows version requires an NVIDIA GPU and proper drivers to run
 
