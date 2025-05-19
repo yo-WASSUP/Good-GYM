@@ -17,7 +17,9 @@
 </div>
 
 ---
-<img src="assets/demo.gif" width="600px" alt="演示">
+<img src="assets/demo.gif" width="800px" alt="演示">
+
+<img src="assets/demo-status.gif" width="800px" alt="演示">
 
 ## ✨ 功能特点
 
@@ -43,7 +45,7 @@
 - 如果您不想配置Python环境，可以直接下载我们打包好的可执行文件：
 
   **Windows EXE打包版本**：
-  
+
   [百度网盘链接]( https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) 提取码: 8866
 
   [Google Drive](https://drive.google.com/file/d/1KkNHAu6TAE8QzcyFxLG9K9qmzuRwHJFf/view?usp=drive_link)

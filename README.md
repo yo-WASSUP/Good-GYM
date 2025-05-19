@@ -17,7 +17,9 @@
 </div>
 
 ---
-<img src="assets/demo.gif" width="600px" alt="演示">
+<img src="assets/demo.gif" width="800px" alt="演示">
+
+<img src="assets/demo-status.gif" width="800px" alt="演示">
 
 ## 🌟 Features
 
@@ -37,7 +39,7 @@
   **Windows EXE package**: 
 
   [Baidu Netdisk Link](https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) code: 8866
-  
+
   [Google Drive](https://drive.google.com/file/d/1KkNHAu6TAE8QzcyFxLG9K9qmzuRwHJFf/view?usp=drive_link)
 
   
