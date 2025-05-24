@@ -1,0 +1,274 @@
+{
+  "daily_records": {
+    "2025-04-18": {
+      "bicep_curl": 10,
+      "overhead_press": 30
+    },
+    "2025-04-19": {
+      "bicep_curl": 27,
+      "lateral_raise": 0,
+      "squat": 0,
+      "leg_raise": 0,
+      "overhead_press": 30
+    },
+    "2025-04-20": {
+      "bicep_curl": 72,
+      "overhead_press": 61,
+      "leg_raise": 7
+    },
+    "2025-04-21": {
+      "bicep_curl": 131,
+      "overhead_press": 128,
+      "lateral_raise": 125,
+      "leg_raise": 3,
+      "squat": 64
+    },
+    "2025-04-22": {
+      "overhead_press": 60,
+      "lateral_raise": 60,
+      "leg_raise": 122,
+      "knee_raise": 100,
+      "pushup": 20,
+      "knee_press": 8
+    },
+    "2025-04-23": {
+      "overhead_press": 120,
+      "pushup": 90,
+      "leg_raise": 307,
+      "lateral_raise": 130,
+      "bicep_curl": 130,
+      "left_knee_press": 161,
+      "right_knee_press": 160,
+      "knee_raise": 160,
+      "squat": 130
+    },
+    "2025-04-24": {
+      "overhead_press": 60,
+      "leg_raise": 91,
+      "knee_raise": 50,
+      "lateral_raise": 62,
+      "left_knee_press": 50,
+      "right_knee_press": 50,
+      "squat": 30
+    },
+    "2025-04-25": {
+      "overhead_press": 36,
+      "lateral_raise": 39,
+      "leg_raise": 21,
+      "pushup": 6,
+      "bicep_curl": 6
+    },
+    "2025-04-26": {
+      "overhead_press": 90,
+      "leg_raise": 101,
+      "lateral_raise": 31,
+      "knee_raise": 50,
+      "squat": 31,
+      "left_knee_press": 62,
+      "right_knee_press": 63,
+      "pushup": 20
+    },
+    "2025-04-27": {
+      "overhead_press": 51,
+      "leg_raise": 171,
+      "knee_raise": 100,
+      "lateral_raise": 62,
+      "left_knee_press": 70,
+      "right_knee_press": 70,
+      "squat": 60,
+      "pushup": 20,
+      "bicep_curl": 60
+    },
+    "2025-04-28": {
+      "overhead_press": 60,
+      "leg_raise": 223,
+      "lateral_raise": 60,
+      "knee_raise": 111,
+      "pushup": 35,
+      "left_knee_press": 121,
+      "right_knee_press": 123,
+      "bicep_curl": 30,
+      "squat": 30
+    },
+    "2025-04-29": {
+      "overhead_press": 140,
+      "leg_raise": 341,
+      "lateral_raise": 121,
+      "knee_raise": 161,
+      "pushup": 60,
+      "left_knee_press": 201,
+      "right_knee_press": 210,
+      "squat": 120,
+      "bicep_curl": 120
+    },
+    "2025-04-30": {
+      "overhead_press": 30,
+      "leg_raise": 120,
+      "lateral_raise": 30,
+      "knee_raise": 60,
+      "pushup": 20,
+      "left_knee_press": 61,
+      "right_knee_press": 60,
+      "squat": 30
+    },
+    "2025-05-02": {
+      "overhead_press": 30
+    },
+    "2025-05-03": {
+      "overhead_press": 90,
+      "leg_raise": 464,
+      "lateral_raise": 90,
+      "pushup": 65,
+      "left_knee_press": 181,
+      "right_knee_press": 199,
+      "squat": 61,
+      "knee_raise": 110
+    },
+    "2025-05-04": {
+      "overhead_press": 60,
+      "leg_raise": 221,
+      "lateral_raise": 61,
+      "knee_raise": 120,
+      "pushup": 25,
+      "left_knee_press": 61,
+      "right_knee_press": 61,
+      "squat": 30
+    },
+    "2025-05-05": {
+      "overhead_press": 91,
+      "leg_raise": 251,
+      "lateral_raise": 60,
+      "knee_raise": 110,
+      "pushup": 35,
+      "left_knee_press": 120,
+      "right_knee_press": 130,
+      "squat": 62
+    },
+    "2025-05-06": {
+      "overhead_press": 60,
+      "leg_raise": 201,
+      "lateral_raise": 60,
+      "knee_raise": 110,
+      "pushup": 50,
+      "left_knee_press": 121,
+      "right_knee_press": 131,
+      "squat": 61
+    },
+    "2025-05-07": {
+      "leg_raise": 270,
+      "knee_raise": 131,
+      "left_knee_press": 132,
+      "right_knee_press": 122,
+      "pushup": 54,
+      "squat": 62,
+      "overhead_press": 22,
+      "lateral_raise": 23,
+      "bicep_curl": 26
+    },
+    "2025-05-08": {
+      "overhead_press": 31,
+      "leg_raise": 151,
+      "lateral_raise": 31,
+      "knee_raise": 70,
+      "pushup": 26,
+      "left_knee_press": 81,
+      "right_knee_press": 80,
+      "bicep_curl": 30,
+      "squat": 50
+    },
+    "2025-05-09": {
+      "overhead_press": 60,
+      "leg_raise": 281,
+      "lateral_raise": 71,
+      "knee_raise": 140,
+      "pushup": 61,
+      "left_knee_press": 142,
+      "right_knee_press": 141,
+      "bicep_curl": 61,
+      "squat": 100
+    },
+    "2025-05-10": {
+      "overhead_press": 60,
+      "leg_raise": 356,
+      "lateral_raise": 63,
+      "knee_raise": 149,
+      "pushup": 51,
+      "left_knee_press": 151,
+      "right_knee_press": 144,
+      "bicep_curl": 63,
+      "squat": 102
+    },
+    "2025-05-13": {
+      "leg_raise": 201,
+      "knee_raise": 70,
+      "left_knee_press": 89,
+      "right_knee_press": 81,
+      "squat": 51
+    },
+    "2025-05-14": {
+      "leg_raise": 201,
+      "knee_raise": 102,
+      "left_knee_press": 101,
+      "right_knee_press": 101,
+      "squat": 51
+    },
+    "2025-05-15": {
+      "leg_raise": 202,
+      "knee_raise": 72,
+      "left_knee_press": 100,
+      "right_knee_press": 100,
+      "squat": 51
+    },
+    "2025-05-16": {
+      "leg_raise": 201,
+      "knee_raise": 101,
+      "left_knee_press": 101,
+      "right_knee_press": 101,
+      "squat": 51
+    },
+    "2025-05-19": {
+      "overhead_press": 60,
+      "leg_raise": 356,
+      "lateral_raise": 63,
+      "knee_raise": 149,
+      "pushup": 51,
+      "left_knee_press": 151,
+      "right_knee_press": 144,
+      "bicep_curl": 63,
+      "squat": 102
+    },
+    "2025-05-20": {
+      "overhead_press": 60,
+      "leg_raise": 356,
+      "lateral_raise": 63,
+      "knee_raise": 149,
+      "pushup": 51,
+      "left_knee_press": 151,
+      "right_knee_press": 144,
+      "bicep_curl": 63,
+      "squat": 102
+    },
+    "2025-05-22": {
+      "overhead_press": 60,
+      "leg_raise": 356,
+      "lateral_raise": 63,
+      "knee_raise": 149,
+      "pushup": 51,
+      "left_knee_press": 151,
+      "right_knee_press": 144,
+      "bicep_curl": 63,
+      "squat": 102
+    },
+    "2025-05-24": {
+      "overhead_press": 30,
+      "leg_raise": 201,
+      "bicep_curl": 31,
+      "knee_raise": 101,
+      "left_knee_press": 100,
+      "right_knee_press": 107,
+      "squat": 52,
+      "pushup": 19
+    }
+  },
+  "last_updated": "2025-05-24 15:49:16"
+}

@@ -87,7 +87,6 @@ coverage.xml
 *.local
 
 # Project-specific
-/data/
 /output/
 
 # Ignore OS files
