@@ -98,6 +98,7 @@ Thumbs.db
 *.conda
 *.env
 venv/
+.venv/
 gpu_env/
 
 # Ignore backup files
@@ -107,6 +108,7 @@ gpu_env/
 
 # Ignore test artifacts
 /test_outputs/
+scripts/
 
 # Ignore PyCharm
 .idea/

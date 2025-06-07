@@ -1,6 +1,8 @@
 opencv-python>=4.5.0
 PyQt5>=5.15.0
-torch>=1.7.0
-ultralytics
 numpy>=1.19.0
-matplotlib>=3.3.0
+onnxruntime>=1.10.0
+rtmlib
+tqdm
+pyinstaller>=5.0.0
+Pillow>=8.0.0
