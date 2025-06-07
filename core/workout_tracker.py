@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+import sys
 from collections import defaultdict
 
 class WorkoutTracker:
@@ -8,8 +9,7 @@ class WorkoutTracker:
     
     def __init__(self):
         # 确定数据存储路径
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.data_dir = os.path.join(base_dir, "data")
+        self.data_dir = self._get_data_directory()
         self.data_file = os.path.join(self.data_dir, "workout_history.json")
         
         # 创建数据目录（如果不存在）
@@ -18,6 +18,28 @@ class WorkoutTracker:
         # 初始化数据
         self.workout_history = self.load_history()
         self.workout_goals = self.load_goals()
+        
+    def _get_data_directory(self):
+        """获取数据目录路径，兼容开发环境和打包环境"""
+        if getattr(sys, 'frozen', False):
+            # 打包后的环境
+            # 首先尝试exe文件同级目录的data文件夹
+            exe_dir = os.path.dirname(sys.executable)
+            external_data_dir = os.path.join(exe_dir, "data")
+            
+            if os.path.exists(external_data_dir):
+                print(f"使用外部data目录: {external_data_dir}")
+                return external_data_dir
+            else:
+                # 如果外部data目录不存在，使用exe同级目录创建
+                print(f"创建外部data目录: {external_data_dir}")
+                return external_data_dir
+        else:
+            # 开发环境，使用项目目录下的data文件夹
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            data_dir = os.path.join(base_dir, "data")
+            print(f"使用开发环境data目录: {data_dir}")
+            return data_dir
         
     def load_history(self):
         """加载历史健身数据"""

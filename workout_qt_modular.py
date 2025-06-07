@@ -1,16 +1,12 @@
 import sys
 import os
-import cv2
-import torch
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
                              QSplitter, QStatusBar, QMessageBox, QAction, QActionGroup, QMenu, QTableWidgetItem, QFileDialog)
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QIcon, QPainter, QColor
-from ultralytics import YOLO
 
 # 导入自定义模块
 from core.video_thread import VideoThread
-from core.pose_processor import PoseProcessor
+from core.rtmpose_processor import RTMPoseProcessor
 from core.sound_manager import SoundManager
 from core.workout_tracker import WorkoutTracker
 from core.translations import Translations as T
@@ -28,18 +24,23 @@ class WorkoutTrackerApp(QMainWindow):
         self.setWindowTitle(T.get("app_title"))
         self.setMinimumSize(900, 900)
         
-        # 检查GPU可用性并设置设备
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        # 只使用CPU设备
+        self.device = 'cpu'
         
-        # 设置默认模型
-        self.model_file = 'yolo11n-pose.pt'
-        
-        # 加载YOLO模型并指定设备
-        print(f"Loading model on {self.device}...")
-        self.model = YOLO(self.model_file).to(self.device)
+        # 设置默认模型模式
+        self.model_mode = 'balanced'
         
         # 创建运动计数器实例
         self.exercise_counter = ExerciseCounter()
+        
+        # 初始化RTMPose姿态处理器
+        print(f"初始化RTMPose处理器 (模式: {self.model_mode}, 设备: {self.device})")
+        self.pose_processor = RTMPoseProcessor(
+            exercise_counter=self.exercise_counter,
+            mode=self.model_mode,
+            backend='onnxruntime',
+            device=self.device
+        )
         
         # 设置默认运动类型
         self.exercise_type = "overhead_press"
@@ -52,9 +53,6 @@ class WorkoutTrackerApp(QMainWindow):
         
         # 创建UI
         self.setup_ui()
-        
-        # 创建姿态处理器
-        self.pose_processor = PoseProcessor(self.model, self.exercise_counter)
         
         # 初始化视频线程
         self.setup_video_thread()
@@ -80,9 +78,8 @@ class WorkoutTrackerApp(QMainWindow):
         # 默认不显示健身统计面板
         self.stats_panel.setVisible(False)
         
-        # 首次启动显示欢迎信息和GPU状态
-        gpu_status = T.get('gpu_enabled') if self.device=='cuda' else T.get('cpu_mode')
-        self.statusBar.showMessage(f"{T.get('welcome')} - {self.device} {gpu_status}")
+        # 首次启动显示欢迎信息
+        self.statusBar.showMessage(f"{T.get('welcome')} - RTMPose ({self.model_mode}) on {self.device}")
     
     def setup_ui(self):
         """设置用户界面"""
@@ -246,7 +243,7 @@ class WorkoutTrackerApp(QMainWindow):
         self.is_resetting = False
         
         self.statusBar.showMessage("已重置计数器")
-        
+    
     def reset_exercise_state(self):
         """重置运动状态，包括计数器和相关变量"""
         # 直接调用现有的重置计数器方法
@@ -383,9 +380,9 @@ class WorkoutTrackerApp(QMainWindow):
     def show_about(self):
         """显示关于信息"""
         about_text = """
-        <h1>AI健身助手--GoodGYM</h1>
-        <p>版本 1.0</p>
-        <p>基于PyQt5和YOLO11-pose开发的健身运动计数器应用，支持多种运动姿态识别和自动计数。</p>
+        <h1>AI健身助手-GoodGYM</h1>
+        <p>版本 1.1</p>
+        <p>基于PyQt5和rtmpose开发的健身运动计数器应用，支持多种运动姿态识别和自动计数。</p>
         <p>特点：</p>
         <ul>
             <li>实时姿态检测和角度计算</li>
@@ -672,59 +669,54 @@ class WorkoutTrackerApp(QMainWindow):
             # 更新状态栏信息
             self.statusBar.showMessage(T.get("language_changed"))
 
-    def change_model(self, model_file):
-        """切换模型"""
+    def change_model(self, model_mode):
+        """切换RTMPose模型模式"""
         try:
-            if model_file == self.model_file:
-                # 如果是同一个模型文件，不需要重新加载
+            if model_mode == self.model_mode:
+                # 如果是同一个模式，不需要重新加载
                 return
                 
             # 停止视频处理
             self.video_thread.stop()
             
             # 显示状态信息
-            self.statusBar.showMessage(f"{T.get('changing_model')} {model_file}...")
+            self.statusBar.showMessage(f"正在切换RTMPose模式到: {model_mode}...")
             
-            # 更新模型文件名
-            self.model_file = model_file
+            # 更新模型模式
+            old_model_mode = self.model_mode
+            self.model_mode = model_mode
             
-            # 释放旧模型资源
-            if hasattr(self, 'model'):
-                del self.model
-                import torch
-                torch.cuda.empty_cache()  # 清理GPU显存
+            print(f"切换RTMPose模式: {old_model_mode} -> {model_mode}")
             
-            # 加载新模型
-            print(f"Loading new model {model_file} on {self.device}...")
-            self.model = YOLO(model_file).to(self.device)
+            # 更新RTMPose处理器模式
+            self.pose_processor.update_model(model_mode)
             
-            # 更新姿态处理器
-            self.pose_processor.update_model(self.model)
-            
-            # 重新初始化视频线程，而不是仅仅启动旧线程
+            # 重新初始化视频线程
             self.setup_video_thread()
             
             # 重新开始视频处理
             QTimer.singleShot(500, self.start_video)  # 延迟500毫秒再启动视频
             
             # 更新状态栏
-            self.statusBar.showMessage(f"{T.get('model_changed_to')} {model_file}")
+            self.statusBar.showMessage(f"已切换到RTMPose {model_mode}模式")
             
         except Exception as e:
             # 如果切换失败，显示错误信息
-            error_msg = f"{T.get('model_change_failed')}: {str(e)}"
+            error_msg = f"RTMPose模式切换失败: {str(e)}"
             self.statusBar.showMessage(error_msg)
             print(error_msg)
             
-            # 尝试回退到原来的模型
+            # 尝试回退到原来的模式
             try:
-                self.model = YOLO(self.model_file).to(self.device)
-                self.pose_processor.update_model(self.model)
-                self.setup_video_thread()  # 同样需要重新初始化视频线程
+                self.model_mode = old_model_mode
+                self.pose_processor.update_model(old_model_mode)
+                self.setup_video_thread()
                 QTimer.singleShot(500, self.start_video)
+                self.statusBar.showMessage(f"已回退到RTMPose {old_model_mode}模式")
+                
             except:
                 # 如果回退也失败，显示严重错误
-                self.statusBar.showMessage(T.get('severe_error'))
+                self.statusBar.showMessage("RTMPose模式切换出现严重错误")
 
 
 if __name__ == "__main__":

@@ -8,8 +8,8 @@ class Translations:
     translations = {
         # 应用标题和通用
         "app_title": {
-            "zh": "AI健身助手--GoodGYM",
-            "en": "AI Workout Assistant--GoodGYM"
+            "zh": "AI健身助手-GoodGYM",
+            "en": "AI Workout Assistant-GoodGYM"
         },
         "ready": {
             "zh": "准备就绪",
@@ -313,13 +313,17 @@ class Translations:
             "zh": "模型选择:",
             "en": "Model:"
         },
-        "model_small": {
-            "zh": "小型模型 (更快)",
-            "en": "Small Model (Faster)"
+        "lightweight": {
+            "zh": "轻量级模型",
+            "en": "Lightweight"
         },
-        "model_large": {
-            "zh": "大型模型 (更准)",
-            "en": "Large Model (More Accurate)"
+        "balanced": {
+            "zh": "平衡模型",
+            "en": "Balanced"
+        },
+        "performance": {
+            "zh": "高性能模型",
+            "en": "Performance"
         },
         "changing_model": {
             "zh": "正在切换模型到",

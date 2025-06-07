@@ -38,10 +38,11 @@ class ControlPanel(QWidget):
             "right_knee_press": T.get("right_knee_press")
         }
         
-        # 初始化模型类型映射
+        # 初始化模型类型映射 - 只保留RTMPose选项
         self.model_display_map = {
-            "yolo11n-pose.pt": T.get("model_small"),
-            "yolo11s-pose.pt": T.get("model_large")
+            "lightweight": T.get("lightweight"),
+            "balanced": T.get("balanced"),
+            "performance": T.get("performance")
         }
         
         # 初始化反向映射
@@ -159,8 +160,9 @@ class ControlPanel(QWidget):
         for model_code, model_display in self.model_display_map.items():
             self.model_combo.addItem(model_display, model_code)
             
-        # 设置默认模型为yolo11n (小模型)
-        self.model_combo.setCurrentIndex(0)
+        # 设置默认模型为RTMPose平衡模式
+        rtmpose_balanced_index = list(self.model_display_map.keys()).index("balanced")
+        self.model_combo.setCurrentIndex(rtmpose_balanced_index)
         self.model_combo.currentIndexChanged.connect(self._on_model_changed)
         
         model_layout.addWidget(self.model_label)
@@ -389,11 +391,11 @@ class ControlPanel(QWidget):
         self.skeleton_toggled.emit(checked)
     
     def _on_model_changed(self, index):
-        """模型类型改变处理"""
-        # 获取当前选中的模型文件名
-        model_file = self.model_combo.currentData()
+        """RTMPose模式改变处理"""
+        # 获取当前选中的模式
+        model_mode = self.model_combo.currentData()
         # 发出信号通知主应用程序
-        self.model_changed.emit(model_file)
+        self.model_changed.emit(model_mode)
     
     def update_counter(self, value):
         """更新计数值"""
@@ -539,8 +541,9 @@ class ControlPanel(QWidget):
         
         # 更新模型类型映射
         self.model_display_map = {
-            "yolo11n-pose.pt": T.get("model_small"),
-            "yolo11s-pose.pt": T.get("model_large")
+            "lightweight": T.get("lightweight"),
+            "balanced": T.get("balanced"),
+            "performance": T.get("performance")
         }
         
         # 更新反向映射
