@@ -341,6 +341,10 @@ class Translations:
             "zh": "发生严重错误，请重启应用",
             "en": "Severe error occurred, please restart application"
         },
+        "mirror_mode": {
+            "zh": "镜像模式",
+            "en": "Mirror Mode"
+        },
     }
     
     @classmethod

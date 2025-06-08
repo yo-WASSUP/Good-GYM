@@ -80,6 +80,9 @@ class WorkoutTrackerApp(QMainWindow):
         
         # 首次启动显示欢迎信息
         self.statusBar.showMessage(f"{T.get('welcome')} - RTMPose ({self.model_mode}) on {self.device}")
+        
+        # 添加镜像模式相关属性
+        self.mirror_mode = True
     
     def setup_ui(self):
         """设置用户界面"""
@@ -131,6 +134,7 @@ class WorkoutTrackerApp(QMainWindow):
         self.control_panel.rotation_toggled.connect(self.toggle_rotation)
         self.control_panel.skeleton_toggled.connect(self.toggle_skeleton)
         self.control_panel.model_changed.connect(self.change_model)  # 连接模型切换信号
+        self.control_panel.mirror_toggled.connect(self.toggle_mirror)
         
         # 连接新增的按钮信号
         self.control_panel.counter_increase.connect(self.increase_counter)
@@ -178,6 +182,12 @@ class WorkoutTrackerApp(QMainWindow):
             processed_frame, current_angle, keypoints = self.pose_processor.process_frame(
                 frame, self.exercise_type
             )
+            
+            # 如果启用镜像模式，应用镜像处理
+            if self.mirror_mode:
+                import cv2
+                processed_frame = cv2.flip(processed_frame, 1)
+            
             # 更新视频显示
             self.video_display.update_image(processed_frame)
             
@@ -717,6 +727,10 @@ class WorkoutTrackerApp(QMainWindow):
             except:
                 # 如果回退也失败，显示严重错误
                 self.statusBar.showMessage("RTMPose模式切换出现严重错误")
+
+    def toggle_mirror(self, mirror):
+        """切换镜像模式"""
+        self.mirror_mode = mirror
 
 
 if __name__ == "__main__":

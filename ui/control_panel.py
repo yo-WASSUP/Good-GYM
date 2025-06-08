@@ -19,6 +19,7 @@ class ControlPanel(QWidget):
     counter_decrease = pyqtSignal(int)
     record_confirmed = pyqtSignal(str)
     model_changed = pyqtSignal(str)  # 添加模型切换信号
+    mirror_toggled = pyqtSignal(bool)
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -198,6 +199,11 @@ class ControlPanel(QWidget):
         self.skeleton_switch = SwitchControl(T.get("skeleton_display"))
         self.skeleton_switch.switched.connect(self._on_skeleton_toggled)
         controls_layout.addWidget(self.skeleton_switch)
+        
+        # 镜像模式切换
+        self.mirror_switch = SwitchControl(T.get("mirror_mode"))
+        self.mirror_switch.switched.connect(self._on_mirror_toggled)
+        controls_layout.addWidget(self.mirror_switch)
         
         # 添加间隔
         spacer = QWidget()
@@ -397,6 +403,10 @@ class ControlPanel(QWidget):
         # 发出信号通知主应用程序
         self.model_changed.emit(model_mode)
     
+    def _on_mirror_toggled(self, checked):
+        """镜像模式切换处理"""
+        self.mirror_toggled.emit(checked)
+    
     def update_counter(self, value):
         """更新计数值"""
         old_count = int(self.counter_value.text() or "0")
@@ -563,6 +573,7 @@ class ControlPanel(QWidget):
         # 更新开关文本
         self.rotation_switch.label.setText(T.get("rotation_mode"))
         self.skeleton_switch.label.setText(T.get("skeleton_display"))
+        self.mirror_switch.label.setText(T.get("mirror_mode"))
         
         # 更新按钮文本
         self.increase_button.setText(T.get("increase"))
