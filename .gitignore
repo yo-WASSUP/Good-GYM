@@ -67,7 +67,6 @@ coverage.xml
 *.pth
 *.pt
 *.ckpt
-*.onnx
 *.npz
 *.npy
 
