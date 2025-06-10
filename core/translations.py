@@ -8,8 +8,8 @@ class Translations:
     translations = {
         # 应用标题和通用
         "app_title": {
-            "zh": "AI健身助手-GoodGYM",
-            "en": "AI Workout Assistant-GoodGYM"
+            "zh": "AI健身助手-Good-GYM",
+            "en": "AI Workout Assistant-Good-GYM"
         },
         "ready": {
             "zh": "准备就绪",

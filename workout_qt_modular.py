@@ -390,7 +390,7 @@ class WorkoutTrackerApp(QMainWindow):
     def show_about(self):
         """显示关于信息"""
         about_text = """
-        <h1>AI健身助手-GoodGYM</h1>
+        <h1>AI健身助手-Good-GYM</h1>
         <p>版本 1.1</p>
         <p>基于PyQt5和rtmpose开发的健身运动计数器应用，支持多种运动姿态识别和自动计数。</p>
         <p>特点：</p>
