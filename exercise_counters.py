@@ -1,437 +1,430 @@
 import numpy as np
+from collections import deque
+import time
+import json
 
-class ExerciseCounter:
-    """类包含所有运动计数逻辑"""
+class EnhancedExerciseCounter:
+    """Enhanced exercise counter with improved accuracy and robustness"""
     
-    def __init__(self):
-        # 计数变量
+    def __init__(self, smoothing_window=5, confidence_threshold=0.5):
+        # Core counting variables
         self.counter = 0
         self.stage = None
         
+        # Enhanced features
+        self.smoothing_window = smoothing_window
+        self.confidence_threshold = confidence_threshold
+        self.angle_history = deque(maxlen=smoothing_window)
+        self.last_count_time = 0
+        self.min_rep_time = 0.5  # Minimum time between reps (seconds)
+        
+        # Form quality tracking
+        self.form_quality = "Good"
+        self.quality_score = 100
+        self.form_feedback = []
+        
+        # Exercise-specific tracking
+        self.exercise_stats = {
+            'total_reps': 0,
+            'session_start': time.time(),
+            'calories_burned': 0,
+            'form_violations': 0,
+            'perfect_reps': 0
+        }
+        
+        # Calibration for different body types
+        self.user_profile = {
+            'height_ratio': 1.0,  # Will be calibrated
+            'limb_ratios': {},
+            'flexibility_factor': 1.0
+        }
+        
+        # Exercise configurations
+        self.exercise_configs = self.get_exercise_configs()
+        
+    def get_exercise_configs(self):
+        """Exercise-specific angle thresholds and parameters"""
+        return {
+            'squat': {
+                'down_angle': 110,
+                'up_angle': 160,
+                'form_checks': ['knee_alignment', 'back_straight', 'depth_check'],
+                'calories_per_rep': 0.5,
+                'muscle_groups': ['quadriceps', 'glutes', 'hamstrings']
+            },
+            'pushup': {
+                'down_angle': 100,
+                'up_angle': 160,
+                'form_checks': ['elbow_flare', 'body_alignment', 'full_range'],
+                'calories_per_rep': 0.4,
+                'muscle_groups': ['chest', 'triceps', 'shoulders']
+            },
+            'situp': {
+                'down_angle': 45,
+                'up_angle': 80,
+                'form_checks': ['neck_position', 'core_engagement', 'full_range'],
+                'calories_per_rep': 0.3,
+                'muscle_groups': ['abs', 'core']
+            },
+            'bicep_curl': {
+                'down_angle': 160,
+                'up_angle': 60,
+                'form_checks': ['elbow_stability', 'shoulder_position', 'controlled_motion'],
+                'calories_per_rep': 0.2,
+                'muscle_groups': ['biceps', 'forearms']
+            },
+            'lateral_raise': {
+                'down_angle': 30,
+                'up_angle': 80,
+                'form_checks': ['shoulder_height', 'controlled_motion', 'elbow_angle'],
+                'calories_per_rep': 0.25,
+                'muscle_groups': ['deltoids', 'upper_back']
+            }
+        }
+    
     def reset_counter(self):
-        """重置计数器"""
+        """Reset counter with enhanced tracking"""
         self.counter = 0
         self.stage = None
-        
-    def calculate_angle(self, a, b, c):
-        """计算三个点之间的角度"""
-        a = np.array(a)
-        b = np.array(b)
-        c = np.array(c)
-        
-        radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
-        angle = np.abs(radians * 180.0 / np.pi)
-        
-        if angle > 180.0:
-            angle = 360 - angle
-            
-        return angle
+        self.angle_history.clear()
+        self.form_feedback.clear()
+        self.quality_score = 100
+        self.exercise_stats = {
+            'total_reps': 0,
+            'session_start': time.time(),
+            'calories_burned': 0,
+            'form_violations': 0,
+            'perfect_reps': 0
+        }
     
-    def count_squat(self, keypoints):
-        """计算深蹲次数基于膝盘角度（基于双腿）"""
-        # 获取深蹲相关关键点
-        # 正确的关键点索引:
-        # 11-左髋, 12-右髋, 13-左膝, 14-右膝, 15-左踝, 16-右踝
+    def calculate_angle(self, a, b, c):
+        """Enhanced angle calculation with validation"""
         try:
-            # 左腿关键点
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_knee = (keypoints[13][0], keypoints[13][1])
-            left_ankle = (keypoints[15][0], keypoints[15][1])
+            a = np.array(a, dtype=np.float64)
+            b = np.array(b, dtype=np.float64)
+            c = np.array(c, dtype=np.float64)
             
-            # 右腿关键点
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_knee = (keypoints[14][0], keypoints[14][1])
-            right_ankle = (keypoints[16][0], keypoints[16][1])
+            # Check for invalid points
+            if np.any(np.isnan([a, b, c])) or np.any([a, b, c] == [0, 0]):
+                return None
             
-            # 计算左右腿的膝盘角度
+            # Calculate vectors
+            ba = a - b
+            bc = c - b
+            
+            # Calculate angle using dot product
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            cosine_angle = np.clip(cosine_angle, -1.0, 1.0)  # Prevent numerical errors
+            angle = np.arccos(cosine_angle)
+            
+            return np.degrees(angle)
+            
+        except Exception as e:
+            print(f"Angle calculation error: {e}")
+            return None
+    
+    def smooth_angle(self, angle):
+        """Apply smoothing to reduce noise"""
+        if angle is None:
+            return None
+            
+        self.angle_history.append(angle)
+        
+        if len(self.angle_history) < 3:
+            return angle
+            
+        # Use median filter to remove outliers, then average
+        angles_array = np.array(list(self.angle_history))
+        median_angle = np.median(angles_array)
+        
+        # Remove outliers (angles > 2 std devs from median)
+        std_dev = np.std(angles_array)
+        filtered_angles = angles_array[np.abs(angles_array - median_angle) <= 2 * std_dev]
+        
+        return np.mean(filtered_angles) if len(filtered_angles) > 0 else angle
+    
+    def check_keypoint_confidence(self, keypoints, required_points, confidence_scores=None):
+        """Check if required keypoints have sufficient confidence"""
+        if confidence_scores is None:
+            # If no confidence scores, check for zero coordinates
+            for idx in required_points:
+                if idx < len(keypoints):
+                    point = keypoints[idx]
+                    if point[0] == 0 and point[1] == 0:
+                        return False
+            return True
+        
+        for idx in required_points:
+            if idx < len(confidence_scores):
+                if confidence_scores[idx] < self.confidence_threshold:
+                    return False
+        return True
+    
+    def check_rep_timing(self):
+        """Prevent counting reps too quickly"""
+        current_time = time.time()
+        if current_time - self.last_count_time < self.min_rep_time:
+            return False
+        return True
+    
+    def analyze_form_quality(self, exercise_type, keypoints, angle):
+        """Analyze form quality and provide feedback"""
+        feedback = []
+        quality_deductions = 0
+        
+        if exercise_type not in self.exercise_configs:
+            return feedback, 0
+            
+        config = self.exercise_configs[exercise_type]
+        
+        try:
+            if exercise_type == 'squat':
+                # Check knee alignment
+                left_knee = keypoints[13]
+                right_knee = keypoints[14]
+                left_ankle = keypoints[15]
+                right_ankle = keypoints[16]
+                
+                # Knees should track over toes
+                knee_ankle_distance_left = abs(left_knee[0] - left_ankle[0])
+                knee_ankle_distance_right = abs(right_knee[0] - right_ankle[0])
+                
+                if knee_ankle_distance_left > 50 or knee_ankle_distance_right > 50:
+                    feedback.append("Keep knees aligned over toes")
+                    quality_deductions += 10
+                
+                # Check depth
+                if self.stage == "down" and angle > 120:
+                    feedback.append("Go deeper for full squat")
+                    quality_deductions += 5
+                    
+            elif exercise_type == 'pushup':
+                # Check body alignment
+                shoulder = keypoints[6]
+                hip = keypoints[12]
+                ankle = keypoints[16]
+                
+                # Calculate body line angle
+                body_angle = self.calculate_angle(shoulder, hip, ankle)
+                if body_angle and (body_angle < 160 or body_angle > 200):
+                    feedback.append("Keep body in straight line")
+                    quality_deductions += 15
+                    
+            elif exercise_type == 'bicep_curl':
+                # Check elbow stability
+                left_shoulder = keypoints[5]
+                right_shoulder = keypoints[6]
+                left_elbow = keypoints[7]
+                right_elbow = keypoints[8]
+                
+                # Elbows should stay close to body
+                shoulder_center_x = (left_shoulder[0] + right_shoulder[0]) / 2
+                elbow_deviation = abs(left_elbow[0] - shoulder_center_x) + abs(right_elbow[0] - shoulder_center_x)
+                
+                if elbow_deviation > 100:
+                    feedback.append("Keep elbows close to body")
+                    quality_deductions += 10
+                    
+        except Exception as e:
+            print(f"Form analysis error: {e}")
+        
+        return feedback, quality_deductions
+    
+    def count_squat(self, keypoints, confidence_scores=None):
+        """Enhanced squat counting with form analysis"""
+        required_points = [11, 12, 13, 14, 15, 16]
+        
+        if not self.check_keypoint_confidence(keypoints, required_points, confidence_scores):
+            return None
+            
+        try:
+            # Get keypoints
+            left_hip = keypoints[11]
+            left_knee = keypoints[13]
+            left_ankle = keypoints[15]
+            right_hip = keypoints[12]
+            right_knee = keypoints[14]
+            right_ankle = keypoints[16]
+            
+            # Calculate angles
             left_angle = self.calculate_angle(left_hip, left_knee, left_ankle)
             right_angle = self.calculate_angle(right_hip, right_knee, right_ankle)
             
-            # 取平均角度作为返回值（用于显示）
-            avg_angle = (left_angle + right_angle) / 2
+            if left_angle is None or right_angle is None:
+                return None
             
-            # 计数逻辑 - 只有两条腿都符合条件时才计数
-            if left_angle > 160 and right_angle > 160:
+            # Use average angle with smoothing
+            avg_angle = (left_angle + right_angle) / 2
+            smoothed_angle = self.smooth_angle(avg_angle)
+            
+            if smoothed_angle is None:
+                return None
+            
+            # Get thresholds
+            config = self.exercise_configs['squat']
+            up_threshold = config['up_angle']
+            down_threshold = config['down_angle']
+            
+            # Form analysis
+            feedback, quality_deduction = self.analyze_form_quality('squat', keypoints, smoothed_angle)
+            self.form_feedback = feedback
+            
+            # Counting logic with timing check
+            if smoothed_angle > up_threshold and both_legs_confidence(left_angle, right_angle, up_threshold):
                 self.stage = "up"
-            elif left_angle < 110 and right_angle < 110 and self.stage == "up":
+            elif (smoothed_angle < down_threshold and 
+                  both_legs_confidence(left_angle, right_angle, down_threshold) and 
+                  self.stage == "up" and 
+                  self.check_rep_timing()):
+                
                 self.stage = "down"
                 self.counter += 1
+                self.last_count_time = time.time()
                 
-            return avg_angle
-        except:
+                # Update stats
+                self.exercise_stats['total_reps'] += 1
+                self.exercise_stats['calories_burned'] += config['calories_per_rep']
+                
+                if quality_deduction == 0:
+                    self.exercise_stats['perfect_reps'] += 1
+                else:
+                    self.exercise_stats['form_violations'] += 1
+                
+                # Update quality score
+                self.quality_score = max(0, self.quality_score - quality_deduction)
+                
+            return smoothed_angle
+            
+        except Exception as e:
+            print(f"Squat counting error: {e}")
             return None
     
-    def count_pushup(self, keypoints):
-        """计算俇卧撞次数基于肘部角度（双臂）"""
-        # 关键点索引: 
-        # 5-左肩, 7-左肘, 9-左腕
-        # 6-右肩, 8-右肘, 10-右腕
+    def count_pushup(self, keypoints, confidence_scores=None):
+        """Enhanced pushup counting"""
+        required_points = [5, 6, 7, 8, 9, 10]
+        
+        if not self.check_keypoint_confidence(keypoints, required_points, confidence_scores):
+            return None
+            
         try:
-            # 左臂关键点
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_elbow = (keypoints[7][0], keypoints[7][1])
-            left_wrist = (keypoints[9][0], keypoints[9][1])
+            # Calculate elbow angles
+            left_shoulder = keypoints[5]
+            left_elbow = keypoints[7]
+            left_wrist = keypoints[9]
+            right_shoulder = keypoints[6]
+            right_elbow = keypoints[8]
+            right_wrist = keypoints[10]
             
-            # 右臂关键点
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_elbow = (keypoints[8][0], keypoints[8][1])
-            right_wrist = (keypoints[10][0], keypoints[10][1])
-            
-            # 计算左右臂肘部角度
             left_angle = self.calculate_angle(left_shoulder, left_elbow, left_wrist)
             right_angle = self.calculate_angle(right_shoulder, right_elbow, right_wrist)
             
-            # 取平均角度作为返回值（用于显示）
+            if left_angle is None or right_angle is None:
+                return None
+            
             avg_angle = (left_angle + right_angle) / 2
+            smoothed_angle = self.smooth_angle(avg_angle)
             
-            # 计数逻辑 - 只有两边手臂都符合条件时才计数
-            if left_angle > 160 and right_angle > 160:
+            if smoothed_angle is None:
+                return None
+            
+            config = self.exercise_configs['pushup']
+            up_threshold = config['up_angle']
+            down_threshold = config['down_angle']
+            
+            # Form analysis
+            feedback, quality_deduction = self.analyze_form_quality('pushup', keypoints, smoothed_angle)
+            self.form_feedback = feedback
+            
+            # Counting logic
+            if smoothed_angle > up_threshold and both_arms_confidence(left_angle, right_angle, up_threshold):
                 self.stage = "up"
-            elif left_angle < 100 and right_angle < 100 and self.stage == "up":
+            elif (smoothed_angle < down_threshold and 
+                  both_arms_confidence(left_angle, right_angle, down_threshold) and 
+                  self.stage == "up" and 
+                  self.check_rep_timing()):
+                
                 self.stage = "down"
                 self.counter += 1
+                self.last_count_time = time.time()
                 
-            return avg_angle
-        except:
+                # Update stats
+                self.exercise_stats['total_reps'] += 1
+                self.exercise_stats['calories_burned'] += config['calories_per_rep']
+                
+                if quality_deduction == 0:
+                    self.exercise_stats['perfect_reps'] += 1
+                else:
+                    self.exercise_stats['form_violations'] += 1
+                
+                self.quality_score = max(0, self.quality_score - quality_deduction)
+                
+            return smoothed_angle
+            
+        except Exception as e:
+            print(f"Pushup counting error: {e}")
             return None
     
-    def count_situp(self, keypoints):
-        """计算仰卧起坐次数基于躯干角度（基于身体两侧）"""
-        # 正确的关键点索引:
-        # 5-左肩, 6-右肩, 11-左髋, 12-右髋, 13-左膝, 14-右膝
-        try:
-            # 左侧躯干关键点
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_knee = (keypoints[13][0], keypoints[13][1])
-            
-            # 右侧躯干关键点
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_knee = (keypoints[14][0], keypoints[14][1])
-            
-            # 计算左右两侧躯干角度
-            left_angle = self.calculate_angle(left_shoulder, left_hip, left_knee)
-            right_angle = self.calculate_angle(right_shoulder, right_hip, right_knee)
-            
-            # 取平均角度作为返回值（用于显示）
-            avg_angle = (left_angle + right_angle) / 2
-            
-            # 计数逻辑 - 左右两侧都身体都要符合条件
-            if left_angle < 45 and right_angle < 45:
-                self.stage = "up"
-            elif left_angle > 80 and right_angle > 80 and self.stage == "up":
-                self.stage = "down"
-                self.counter += 1
-                
-            return avg_angle
-        except:
-            return None
+    def get_exercise_stats(self):
+        """Get comprehensive exercise statistics"""
+        session_duration = time.time() - self.exercise_stats['session_start']
+        
+        stats = {
+            'reps': self.counter,
+            'total_reps': self.exercise_stats['total_reps'],
+            'calories_burned': round(self.exercise_stats['calories_burned'], 2),
+            'session_duration': round(session_duration / 60, 2),  # minutes
+            'form_quality': self.form_quality,
+            'quality_score': self.quality_score,
+            'perfect_reps': self.exercise_stats['perfect_reps'],
+            'form_violations': self.exercise_stats['form_violations'],
+            'form_feedback': self.form_feedback,
+            'reps_per_minute': round(self.counter / (session_duration / 60), 1) if session_duration > 0 else 0
+        }
+        
+        return stats
     
-    def count_bicep_curl(self, keypoints):
-        """计算二头肌弯举次数基于肘部角度（双臂）"""
+    def save_session_data(self, filename):
+        """Save session data to file"""
+        stats = self.get_exercise_stats()
         try:
-            # 正确的关键点索引
-            # 左手臂: 5-左肩, 7-左肘, 9-左手腕
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_elbow = (keypoints[7][0], keypoints[7][1])
-            left_wrist = (keypoints[9][0], keypoints[9][1])
-            
-            # 右手臂: 6-右肩, 8-右肘, 10-右手腕
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_elbow = (keypoints[8][0], keypoints[8][1])
-            right_wrist = (keypoints[10][0], keypoints[10][1])
-            
-            # 计算左右肘部角度
-            left_angle = self.calculate_angle(left_shoulder, left_elbow, left_wrist)
-            right_angle = self.calculate_angle(right_shoulder, right_elbow, right_wrist)
-            
-            # 取平均值作为显示角度
-            avg_angle = (left_angle + right_angle) / 2
-            
-            # 判断左右两侧是否都处于同一状态
-            left_is_down = left_angle > 160
-            right_is_down = right_angle > 160
-            left_is_up = left_angle < 60
-            right_is_up = right_angle < 60
-            
-            # 计数逻辑 - 两侧都满足条件才计数
-            if left_is_down and right_is_down:
-                self.stage = "down"
-            elif left_is_up and right_is_up and self.stage == "down":
-                self.stage = "up"
-                self.counter += 1
-                
-            return avg_angle
-        except:
-            return None
+            with open(filename, 'w') as f:
+                json.dump(stats, f, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving session data: {e}")
+            return False
     
-    def count_lateral_raise(self, keypoints):
-        """计算侧平举次数基于肩部角度（双臂）"""
+    def calibrate_user_profile(self, keypoints):
+        """Calibrate system for user's body proportions"""
         try:
-            # 左侧手臂关键点: 11-left hip, 5-left shoulder, 7-left elbow
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_elbow = (keypoints[7][0], keypoints[7][1])
-            
-            # 右侧手臂关键点: 12-right hip, 6-right shoulder, 8-right elbow
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_elbow = (keypoints[8][0], keypoints[8][1])
-            
-            # 计算左右两侧肩膀角度
-            left_angle = self.calculate_angle(left_hip, left_shoulder, left_elbow)
-            right_angle = self.calculate_angle(right_hip, right_shoulder, right_elbow)
-            
-            # 取左右两侧角度的平均值作为显示
-            avg_angle = (left_angle + right_angle) / 2
-            
-            # 判断左右两侧是否都处于同一状态
-            left_is_down = left_angle < 30
-            right_is_down = right_angle < 30
-            left_is_up = left_angle > 80
-            right_is_up = right_angle > 80
-            
-            # 计数逻辑 - 两侧都满足条件才计数
-            if left_is_down and right_is_down:
-                self.stage = "down"
-            elif left_is_up and right_is_up and self.stage == "down":
-                self.stage = "up"
-                self.counter += 1
+            # Calculate basic body ratios
+            if len(keypoints) >= 17:
+                # Shoulder width
+                shoulder_width = abs(keypoints[5][0] - keypoints[6][0])
+                # Hip width  
+                hip_width = abs(keypoints[11][0] - keypoints[12][0])
+                # Torso length
+                torso_length = abs(keypoints[5][1] - keypoints[11][1])
                 
-            return avg_angle
-        except:
-            return None
-            
-    def count_overhead_press(self, keypoints):
-        """计算推举次数基于肩部角度（双臂）"""
-        try:
-            # 左侧手臂关键点: 11-left hip, 5-left shoulder, 7-left elbow
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_elbow = (keypoints[7][0], keypoints[7][1])
-            
-            # 右侧手臂关键点: 12-right hip, 6-right shoulder, 8-right elbow
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_elbow = (keypoints[8][0], keypoints[8][1])
-            
-            # 计算左右两侧肩膀角度
-            left_angle = self.calculate_angle(left_hip, left_shoulder, left_elbow)
-            right_angle = self.calculate_angle(right_hip, right_shoulder, right_elbow)
-            
-            # 取左右两侧角度的平均值作为显示
-            avg_angle = (left_angle + right_angle) / 2
-            
-            # 判断左右两侧是否都处于同一状态
-            left_is_down = left_angle < 30
-            right_is_down = right_angle < 30
-            left_is_up = left_angle > 150
-            right_is_up = right_angle > 150
-            
-            # 计数逻辑 - 两侧都满足条件才计数
-            if left_is_down and right_is_down:
-                self.stage = "down"
-            elif left_is_up and right_is_up and self.stage == "down":
-                self.stage = "up"
-                self.counter += 1
-                
-            return avg_angle
-        except:
-            return None
-    
-    def count_leg_raise(self, keypoints):
-        """计算左右交替抬腿次数"""
-        try:
-            # 左侧手臂关键点: 5-left shoulder, 7-left elbow, 11-left hip
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_knee = (keypoints[13][0], keypoints[13][1])
-            
-            # 右侧手臂关键点: 6-right shoulder, 8-right elbow, 12-right hip
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_knee = (keypoints[14][0], keypoints[14][1])
-            
-            # 计算左右腿的髋膝角度
-            left_leg_angle = self.calculate_angle(left_shoulder, left_hip, left_knee)
-            right_leg_angle = self.calculate_angle(right_shoulder, right_hip, right_knee)
-            
-            # 判断腿部抬起状态
-            left_leg_raised = left_leg_angle < 130  # 左腿抬起
-            right_leg_raised = right_leg_angle < 130  # 右腿抬起
-            both_legs_down = left_leg_angle > 160 and right_leg_angle > 160  # 两腿都落下
-            
-            # 取平均角度作为返回值（用于显示）
-            current_angle = left_leg_angle if left_leg_raised else right_leg_angle
-            
-            # 计数逻辑 - 交替抬腿
-            # 初始化stage状态
-            if not hasattr(self, 'prev_leg'):
-                self.prev_leg = 'none'
-            
-            if both_legs_down:
-                self.stage = "down"  # 两腿均落下
-            elif left_leg_raised and self.stage == "down" and self.prev_leg != 'left':
-                self.stage = "up"
-                self.prev_leg = 'left'
-                self.counter += 1
-            elif right_leg_raised and self.stage == "down" and self.prev_leg != 'right':
-                self.stage = "up"
-                self.prev_leg = 'right'
-                self.counter += 1
-            
-            return current_angle
-        except:
-            return None
-    
-    def count_knee_raise(self, keypoints):
-        """计算单侧提膝次数（右腿）"""
-        try:
-            # 髋部关键点: 12-右髋
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            
-            # 膝盘关键点: 14-右膝
-            right_knee = (keypoints[14][0], keypoints[14][1])
-            
-            # 踝部关键点: 16-右踝
-            right_ankle = (keypoints[16][0], keypoints[16][1])
-            
-            # 计算右腿的髋膝角度
-            right_leg_angle = self.calculate_angle(right_hip, right_knee, right_ankle)
-            
-            # 判断提膝位置
-            # 提膝位置的标准：1. 膝盘高于髋部 2. 腿部角度足够大（表示腿部弹性收紧）
-            knee_raised = right_leg_angle < 110  # 提膝高度足够且角度足够大
-            knee_lowered = right_leg_angle > 160  # 腿部下放
-            
-            # 计数逻辑
-            if knee_lowered:
-                self.stage = "down"
-            elif knee_raised and self.stage == "down":
-                self.stage = "up"
-                self.counter += 1
-            
-            return right_leg_angle
-        except:
-            return None
-            
-    def count_left_knee_press(self, keypoints):
-        """计算左侧提膝下压次数"""
-        try:
-            # 左腿关键点
-            left_shoulder = (keypoints[5][0], keypoints[5][1])
-            left_hip = (keypoints[11][0], keypoints[11][1])
-            left_knee = (keypoints[13][0], keypoints[13][1])
-            
-            # 计算左腿的角度 - 使用肩膛膨和髋关节
-            left_leg_angle = self.calculate_angle(left_shoulder, left_hip, left_knee)
-            
-            # 设置活跃侧为左侧（用于角度显示）
-            self.active_side = 'left'
-            
-            # 设置提膝下压的角度阈值
-            down_angle = 110  # 膝盖弯曲时的角度阈值
-            up_angle = 150   # 膝盖伸直时的角度阈值
-            
-            # 初始化阶段变量（如果尚未初始化）
-            if not hasattr(self, 'left_stage'):
-                self.left_stage = None
-            
-            # 左腿计数逻辑
-            if left_leg_angle < down_angle and self.left_stage != "up":
-                self.left_stage = "up"
-                self.stage = "up"  # 更新总体阶段状态
-            elif left_leg_angle > up_angle and self.left_stage == "up":
-                self.counter += 1
-                self.left_stage = "down"
-                self.stage = "down"  # 更新总体阶段状态
-            
-            # 直接返回左腿角度值
-            return left_leg_angle
-        except:
-            return None
-            
-    def count_right_knee_press(self, keypoints):
-        """计算右侧提膝下压次数"""
-        try:
-            # 右腿关键点
-            right_shoulder = (keypoints[6][0], keypoints[6][1])
-            right_hip = (keypoints[12][0], keypoints[12][1])
-            right_knee = (keypoints[14][0], keypoints[14][1])
-            
-            # 计算右腿的角度 - 使用肩膛膨和髋关节
-            right_leg_angle = self.calculate_angle(right_shoulder, right_hip, right_knee)
-            
-            # 设置活跃侧为右侧（用于角度显示）
-            self.active_side = 'right'
-            
-            # 设置提膝下压的角度阈值
-            down_angle = 110  # 膝盖弯曲时的角度阈值
-            up_angle = 150   # 膝盖伸直时的角度阈值
-            
-            # 初始化阶段变量（如果尚未初始化）
-            if not hasattr(self, 'right_stage'):
-                self.right_stage = None
-            
-            # 右腿计数逻辑
-            if right_leg_angle < down_angle and self.right_stage != "up":
-                self.right_stage = "up"
-                self.stage = "up"  # 更新总体阶段状态
-            elif right_leg_angle > up_angle and self.right_stage == "up":
-                self.counter += 1
-                self.right_stage = "down"
-                self.stage = "down"  # 更新总体阶段状态
-            
-            # 直接返回右腿角度值
-            return right_leg_angle
-        except:
-            return None
-    
-    # 获取角度显示位置的辅助函数
-    def get_angle_point(self, keypoints, exercise_type):
-        """根据运动类型获取角度显示位置"""
-        try:
-            if exercise_type == "squat":
-                # 膝盖关节点 (右膝) - 14
-                return (int(keypoints[14][0]), int(keypoints[14][1]))
-                
-            elif exercise_type == "pushup":
-                # 肘部关节点 (右肘) - 8
-                return (int(keypoints[8][0]), int(keypoints[8][1]))
-                
-            elif exercise_type == "situp":
-                # 髋部关节点 (右髋) - 12
-                return (int(keypoints[12][0]), int(keypoints[12][1]))
-                
-            elif exercise_type == "bicep_curl":
-                # 肘部关节点 (右肘) - 8
-                return (int(keypoints[8][0]), int(keypoints[8][1]))
-                
-            elif exercise_type == "lateral_raise":
-                # 肩部关节点 (右肩) - 6
-                return (int(keypoints[6][0]), int(keypoints[6][1]))
-                
-            elif exercise_type == "overhead_press":
-                # 肩部关节点 (右肩) - 6
-                return (int(keypoints[6][0]), int(keypoints[6][1]))
-            
-            elif exercise_type == "leg_raise":
-                # 显示当前抬起的腿的膝盘关节点
-                return (int(keypoints[13][0]), int(keypoints[13][1]))
-            
-            elif exercise_type == "knee_raise":
-                # 单侧提膝的膝盘关节点 (右膝) - 14
-                return (int(keypoints[14][0]), int(keypoints[14][1]))
-                
-            elif exercise_type == "left_knee_press":
-                # 左侧提膝下压 - 显示左膝角度
-                return (int(keypoints[13][0]), int(keypoints[13][1]))
-                
-            elif exercise_type == "right_knee_press":
-                # 右侧提膝下压 - 显示右膝角度
-                return (int(keypoints[14][0]), int(keypoints[14][1]))
-                
-            return None
-        except:
-            return None
+                if shoulder_width > 0 and hip_width > 0 and torso_length > 0:
+                    self.user_profile['limb_ratios'] = {
+                        'shoulder_hip_ratio': shoulder_width / hip_width,
+                        'torso_length': torso_length
+                    }
+                    print("User profile calibrated successfully")
+                    
+        except Exception as e:
+            print(f"Calibration error: {e}")
+
+# Helper functions
+def both_legs_confidence(left_angle, right_angle, threshold):
+    """Check if both legs meet the threshold with some tolerance"""
+    tolerance = 15
+    return (abs(left_angle - threshold) < tolerance or 
+            abs(right_angle - threshold) < tolerance)
+
+def both_arms_confidence(left_angle, right_angle, threshold):
+    """Check if both arms meet the threshold with some tolerance"""
+    tolerance = 20
+    return (abs(left_angle - threshold) < tolerance or 
+            abs(right_angle - threshold) < tolerance)
