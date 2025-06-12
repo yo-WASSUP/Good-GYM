@@ -84,8 +84,7 @@ class WorkoutTracker:
                 "overhead_press": 15,
                 "leg_raise": 15,
                 "knee_raise": 15,
-                "left_knee_press": 15,
-                "right_knee_press": 15
+                "knee_press": 15
             },
             "weekly": {
                 "total_workouts": 5  # 每周计划健身天数

@@ -202,22 +202,15 @@ class RTMPoseProcessor:
             elif exercise_type == "leg_raise":
                 current_angle = self.exercise_counter.count_leg_raise(keypoints)
                 if current_angle is not None:
-                    if hasattr(self.exercise_counter, 'prev_leg') and self.exercise_counter.prev_leg == 'left':
-                        angle_point = [keypoints[11], keypoints[13], keypoints[15]]
-                    else:
-                        angle_point = [keypoints[12], keypoints[14], keypoints[16]]
+                    angle_point = [keypoints[12], keypoints[14], keypoints[16]]
             elif exercise_type == "knee_raise":
                 current_angle = self.exercise_counter.count_knee_raise(keypoints)
                 if current_angle is not None:
                     angle_point = [keypoints[12], keypoints[14], keypoints[16]]
-            elif exercise_type == "left_knee_press":
-                current_angle = self.exercise_counter.count_left_knee_press(keypoints)
+            elif exercise_type == "knee_press":
+                current_angle = self.exercise_counter.count_knee_press(keypoints)
                 if current_angle is not None:
                     angle_point = [keypoints[11], keypoints[13], keypoints[15]]
-            elif exercise_type == "right_knee_press":
-                current_angle = self.exercise_counter.count_right_knee_press(keypoints)
-                if current_angle is not None:
-                    angle_point = [keypoints[12], keypoints[14], keypoints[16]]
         except Exception as e:
             print(f"计算运动角度时出错: {e}")
             

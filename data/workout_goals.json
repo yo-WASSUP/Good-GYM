@@ -9,7 +9,8 @@
     "leg_raise": 300,
     "knee_raise": 150,
     "left_knee_press": 150,
-    "right_knee_press": 150
+    "right_knee_press": 150,
+    "knee_press": 20
   },
   "weekly": {
     "total_workouts": 6
