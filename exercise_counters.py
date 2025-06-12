@@ -1,104 +1,114 @@
 import numpy as np
 from collections import deque
 import time
-import json
 
-class EnhancedExerciseCounter:
-    """Enhanced exercise counter with improved accuracy and robustness"""
+class ExerciseCounter:
+    """Basic exercise counter with angle-based detection"""
     
-    def __init__(self, smoothing_window=5, confidence_threshold=0.5):
+    def __init__(self, smoothing_window=5):
         # Core counting variables
         self.counter = 0
         self.stage = None
         
-        # Enhanced features
+        # Basic features
         self.smoothing_window = smoothing_window
-        self.confidence_threshold = confidence_threshold
         self.angle_history = deque(maxlen=smoothing_window)
         self.last_count_time = 0
         self.min_rep_time = 0.5  # Minimum time between reps (seconds)
         
-        # Form quality tracking
-        self.form_quality = "Good"
-        self.quality_score = 100
-        self.form_feedback = []
-        
-        # Exercise-specific tracking
-        self.exercise_stats = {
-            'total_reps': 0,
-            'session_start': time.time(),
-            'calories_burned': 0,
-            'form_violations': 0,
-            'perfect_reps': 0
-        }
-        
-        # Calibration for different body types
-        self.user_profile = {
-            'height_ratio': 1.0,  # Will be calibrated
-            'limb_ratios': {},
-            'flexibility_factor': 1.0
-        }
-        
         # Exercise configurations
         self.exercise_configs = self.get_exercise_configs()
         
+        # Independent counting for leg exercises
+        self.leg_exercises = ['leg_raise', 'knee_raise', 'knee_press']
+        self.leg_stages = {'left': None, 'right': None}  # Track each leg's stage
+    
     def get_exercise_configs(self):
-        """Exercise-specific angle thresholds and parameters"""
+        """Exercise-specific angle thresholds"""
         return {
             'squat': {
                 'down_angle': 110,
                 'up_angle': 160,
-                'form_checks': ['knee_alignment', 'back_straight', 'depth_check'],
-                'calories_per_rep': 0.5,
-                'muscle_groups': ['quadriceps', 'glutes', 'hamstrings']
+                'keypoints': {
+                    'left': [11, 13, 15],  # hip, knee, ankle
+                    'right': [12, 14, 16]  # hip, knee, ankle
+                }
             },
             'pushup': {
-                'down_angle': 100,
+                'down_angle': 110,
                 'up_angle': 160,
-                'form_checks': ['elbow_flare', 'body_alignment', 'full_range'],
-                'calories_per_rep': 0.4,
-                'muscle_groups': ['chest', 'triceps', 'shoulders']
+                'keypoints': {
+                    'left': [5, 7, 9],    # shoulder, elbow, wrist
+                    'right': [6, 8, 10]   # shoulder, elbow, wrist
+                }
             },
             'situp': {
-                'down_angle': 45,
-                'up_angle': 80,
-                'form_checks': ['neck_position', 'core_engagement', 'full_range'],
-                'calories_per_rep': 0.3,
-                'muscle_groups': ['abs', 'core']
+                'down_angle': 145,
+                'up_angle': 170,
+                'keypoints': {
+                    'left': [5, 11, 15],  # shoulder, hip, ankle
+                    'right': [6, 12, 16]  # shoulder, hip, ankle
+                }
             },
             'bicep_curl': {
                 'down_angle': 160,
                 'up_angle': 60,
-                'form_checks': ['elbow_stability', 'shoulder_position', 'controlled_motion'],
-                'calories_per_rep': 0.2,
-                'muscle_groups': ['biceps', 'forearms']
+                'keypoints': {
+                    'left': [5, 7, 9],    # shoulder, elbow, wrist
+                    'right': [6, 8, 10]   # shoulder, elbow, wrist
+                }
             },
             'lateral_raise': {
                 'down_angle': 30,
                 'up_angle': 80,
-                'form_checks': ['shoulder_height', 'controlled_motion', 'elbow_angle'],
-                'calories_per_rep': 0.25,
-                'muscle_groups': ['deltoids', 'upper_back']
+                'keypoints': {
+                    'left': [11, 5, 7],    # hip, shoulder, elbow
+                    'right': [12, 6, 8]   # hip, shoulder, elbow
+                }
+            },
+            'overhead_press': {
+                'down_angle': 30,
+                'up_angle': 150,
+                'keypoints': {
+                    'left': [11, 5, 7],    # hip, shoulder, elbow
+                    'right': [12, 6, 8]   # hip, shoulder, elbow
+                }
+            },
+            'leg_raise': {
+                'down_angle': 130,
+                'up_angle': 160,
+                'keypoints': {
+                    'left': [5, 11, 13],  # shoulder, hip, knee
+                    'right': [6, 12, 14]  # shoulder, hip, knee
+                }
+            },
+            'knee_raise': {
+                'down_angle': 110,
+                'up_angle': 160,
+                'keypoints': {
+                    'left': [11, 13, 15],  # hip, knee, ankle
+                    'right': [12, 14, 16]  # hip, knee, ankle
+                }
+            },
+            'knee_press': {
+                'down_angle': 110,
+                'up_angle': 160,
+                'keypoints': {
+                    'left': [11, 13, 15],  # hip, knee, ankle
+                    'right': [12, 14, 16]  # hip, knee, ankle
+                }
             }
         }
     
     def reset_counter(self):
-        """Reset counter with enhanced tracking"""
+        """Reset counter to initial state"""
         self.counter = 0
         self.stage = None
         self.angle_history.clear()
-        self.form_feedback.clear()
-        self.quality_score = 100
-        self.exercise_stats = {
-            'total_reps': 0,
-            'session_start': time.time(),
-            'calories_burned': 0,
-            'form_violations': 0,
-            'perfect_reps': 0
-        }
+        self.leg_stages = {'left': None, 'right': None}
     
     def calculate_angle(self, a, b, c):
-        """Enhanced angle calculation with validation"""
+        """Calculate angle between three points"""
         try:
             a = np.array(a, dtype=np.float64)
             b = np.array(b, dtype=np.float64)
@@ -112,8 +122,15 @@ class EnhancedExerciseCounter:
             ba = a - b
             bc = c - b
             
+            # Check for zero vectors
+            ba_norm = np.linalg.norm(ba)
+            bc_norm = np.linalg.norm(bc)
+            
+            if ba_norm == 0 or bc_norm == 0:
+                return None
+            
             # Calculate angle using dot product
-            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            cosine_angle = np.dot(ba, bc) / (ba_norm * bc_norm)
             cosine_angle = np.clip(cosine_angle, -1.0, 1.0)  # Prevent numerical errors
             angle = np.arccos(cosine_angle)
             
@@ -143,23 +160,6 @@ class EnhancedExerciseCounter:
         
         return np.mean(filtered_angles) if len(filtered_angles) > 0 else angle
     
-    def check_keypoint_confidence(self, keypoints, required_points, confidence_scores=None):
-        """Check if required keypoints have sufficient confidence"""
-        if confidence_scores is None:
-            # If no confidence scores, check for zero coordinates
-            for idx in required_points:
-                if idx < len(keypoints):
-                    point = keypoints[idx]
-                    if point[0] == 0 and point[1] == 0:
-                        return False
-            return True
-        
-        for idx in required_points:
-            if idx < len(confidence_scores):
-                if confidence_scores[idx] < self.confidence_threshold:
-                    return False
-        return True
-    
     def check_rep_timing(self):
         """Prevent counting reps too quickly"""
         current_time = time.time()
@@ -167,93 +167,37 @@ class EnhancedExerciseCounter:
             return False
         return True
     
-    def analyze_form_quality(self, exercise_type, keypoints, angle):
-        """Analyze form quality and provide feedback"""
-        feedback = []
-        quality_deductions = 0
-        
-        if exercise_type not in self.exercise_configs:
-            return feedback, 0
-            
-        config = self.exercise_configs[exercise_type]
-        
+    def count_exercise(self, keypoints, exercise_type):
+        """Generic exercise counting function"""
         try:
-            if exercise_type == 'squat':
-                # Check knee alignment
-                left_knee = keypoints[13]
-                right_knee = keypoints[14]
-                left_ankle = keypoints[15]
-                right_ankle = keypoints[16]
+            if exercise_type not in self.exercise_configs:
+                print(f"Unknown exercise type: {exercise_type}")
+                return None
                 
-                # Knees should track over toes
-                knee_ankle_distance_left = abs(left_knee[0] - left_ankle[0])
-                knee_ankle_distance_right = abs(right_knee[0] - right_ankle[0])
-                
-                if knee_ankle_distance_left > 50 or knee_ankle_distance_right > 50:
-                    feedback.append("Keep knees aligned over toes")
-                    quality_deductions += 10
-                
-                # Check depth
-                if self.stage == "down" and angle > 120:
-                    feedback.append("Go deeper for full squat")
-                    quality_deductions += 5
-                    
-            elif exercise_type == 'pushup':
-                # Check body alignment
-                shoulder = keypoints[6]
-                hip = keypoints[12]
-                ankle = keypoints[16]
-                
-                # Calculate body line angle
-                body_angle = self.calculate_angle(shoulder, hip, ankle)
-                if body_angle and (body_angle < 160 or body_angle > 200):
-                    feedback.append("Keep body in straight line")
-                    quality_deductions += 15
-                    
-            elif exercise_type == 'bicep_curl':
-                # Check elbow stability
-                left_shoulder = keypoints[5]
-                right_shoulder = keypoints[6]
-                left_elbow = keypoints[7]
-                right_elbow = keypoints[8]
-                
-                # Elbows should stay close to body
-                shoulder_center_x = (left_shoulder[0] + right_shoulder[0]) / 2
-                elbow_deviation = abs(left_elbow[0] - shoulder_center_x) + abs(right_elbow[0] - shoulder_center_x)
-                
-                if elbow_deviation > 100:
-                    feedback.append("Keep elbows close to body")
-                    quality_deductions += 10
-                    
-        except Exception as e:
-            print(f"Form analysis error: {e}")
-        
-        return feedback, quality_deductions
-    
-    def count_squat(self, keypoints, confidence_scores=None):
-        """Enhanced squat counting with form analysis"""
-        required_points = [11, 12, 13, 14, 15, 16]
-        
-        if not self.check_keypoint_confidence(keypoints, required_points, confidence_scores):
-            return None
+            config = self.exercise_configs[exercise_type]
+            kp = config['keypoints']
             
-        try:
-            # Get keypoints
-            left_hip = keypoints[11]
-            left_knee = keypoints[13]
-            left_ankle = keypoints[15]
-            right_hip = keypoints[12]
-            right_knee = keypoints[14]
-            right_ankle = keypoints[16]
+            # Calculate angles for both sides
+            left_angle = self.calculate_angle(
+                keypoints[kp['left'][0]],  # first point
+                keypoints[kp['left'][1]],  # middle point
+                keypoints[kp['left'][2]]   # last point
+            )
             
-            # Calculate angles
-            left_angle = self.calculate_angle(left_hip, left_knee, left_ankle)
-            right_angle = self.calculate_angle(right_hip, right_knee, right_ankle)
+            right_angle = self.calculate_angle(
+                keypoints[kp['right'][0]],  # first point
+                keypoints[kp['right'][1]],  # middle point
+                keypoints[kp['right'][2]]   # last point
+            )
             
             if left_angle is None or right_angle is None:
                 return None
             
-            # Use average angle with smoothing
+            # Handle leg exercises differently
+            if exercise_type in self.leg_exercises:
+                return self.count_leg_exercise(left_angle, right_angle, config)
+            
+            # For other exercises, use average angle
             avg_angle = (left_angle + right_angle) / 2
             smoothed_angle = self.smooth_angle(avg_angle)
             
@@ -261,19 +205,13 @@ class EnhancedExerciseCounter:
                 return None
             
             # Get thresholds
-            config = self.exercise_configs['squat']
             up_threshold = config['up_angle']
             down_threshold = config['down_angle']
-            
-            # Form analysis
-            feedback, quality_deduction = self.analyze_form_quality('squat', keypoints, smoothed_angle)
-            self.form_feedback = feedback
             
             # Counting logic with timing check
-            if smoothed_angle > up_threshold and both_legs_confidence(left_angle, right_angle, up_threshold):
+            if smoothed_angle > up_threshold:
                 self.stage = "up"
             elif (smoothed_angle < down_threshold and 
-                  both_legs_confidence(left_angle, right_angle, down_threshold) and 
                   self.stage == "up" and 
                   self.check_rep_timing()):
                 
@@ -281,150 +219,73 @@ class EnhancedExerciseCounter:
                 self.counter += 1
                 self.last_count_time = time.time()
                 
-                # Update stats
-                self.exercise_stats['total_reps'] += 1
-                self.exercise_stats['calories_burned'] += config['calories_per_rep']
-                
-                if quality_deduction == 0:
-                    self.exercise_stats['perfect_reps'] += 1
-                else:
-                    self.exercise_stats['form_violations'] += 1
-                
-                # Update quality score
-                self.quality_score = max(0, self.quality_score - quality_deduction)
-                
             return smoothed_angle
             
         except Exception as e:
-            print(f"Squat counting error: {e}")
+            print(f"Exercise counting error: {e}")
             return None
     
-    def count_pushup(self, keypoints, confidence_scores=None):
-        """Enhanced pushup counting"""
-        required_points = [5, 6, 7, 8, 9, 10]
+    def count_leg_exercise(self, left_angle, right_angle, config):
+        """Count leg exercises with complete up-down cycles"""
+        up_threshold = config['up_angle']
+        down_threshold = config['down_angle']
         
-        if not self.check_keypoint_confidence(keypoints, required_points, confidence_scores):
-            return None
-            
-        try:
-            # Calculate elbow angles
-            left_shoulder = keypoints[5]
-            left_elbow = keypoints[7]
-            left_wrist = keypoints[9]
-            right_shoulder = keypoints[6]
-            right_elbow = keypoints[8]
-            right_wrist = keypoints[10]
-            
-            left_angle = self.calculate_angle(left_shoulder, left_elbow, left_wrist)
-            right_angle = self.calculate_angle(right_shoulder, right_elbow, right_wrist)
-            
-            if left_angle is None or right_angle is None:
-                return None
-            
-            avg_angle = (left_angle + right_angle) / 2
-            smoothed_angle = self.smooth_angle(avg_angle)
-            
-            if smoothed_angle is None:
-                return None
-            
-            config = self.exercise_configs['pushup']
-            up_threshold = config['up_angle']
-            down_threshold = config['down_angle']
-            
-            # Form analysis
-            feedback, quality_deduction = self.analyze_form_quality('pushup', keypoints, smoothed_angle)
-            self.form_feedback = feedback
-            
-            # Counting logic
-            if smoothed_angle > up_threshold and both_arms_confidence(left_angle, right_angle, up_threshold):
-                self.stage = "up"
-            elif (smoothed_angle < down_threshold and 
-                  both_arms_confidence(left_angle, right_angle, down_threshold) and 
-                  self.stage == "up" and 
-                  self.check_rep_timing()):
-                
-                self.stage = "down"
+        # Check if either leg meets the criteria
+        if self.check_rep_timing():
+            # Left leg
+            if left_angle > up_threshold:
+                self.leg_stages['left'] = "up"
+            elif (left_angle < down_threshold and 
+                  self.leg_stages['left'] == "up"):
                 self.counter += 1
                 self.last_count_time = time.time()
-                
-                # Update stats
-                self.exercise_stats['total_reps'] += 1
-                self.exercise_stats['calories_burned'] += config['calories_per_rep']
-                
-                if quality_deduction == 0:
-                    self.exercise_stats['perfect_reps'] += 1
-                else:
-                    self.exercise_stats['form_violations'] += 1
-                
-                self.quality_score = max(0, self.quality_score - quality_deduction)
-                
-            return smoothed_angle
+                self.leg_stages['left'] = "down"
             
-        except Exception as e:
-            print(f"Pushup counting error: {e}")
-            return None
-    
-    def get_exercise_stats(self):
-        """Get comprehensive exercise statistics"""
-        session_duration = time.time() - self.exercise_stats['session_start']
+            # Right leg
+            if right_angle > up_threshold:
+                self.leg_stages['right'] = "up"
+            elif (right_angle < down_threshold and 
+                  self.leg_stages['right'] == "up"):
+                self.counter += 1
+                self.last_count_time = time.time()
+                self.leg_stages['right'] = "down"
         
-        stats = {
-            'reps': self.counter,
-            'total_reps': self.exercise_stats['total_reps'],
-            'calories_burned': round(self.exercise_stats['calories_burned'], 2),
-            'session_duration': round(session_duration / 60, 2),  # minutes
-            'form_quality': self.form_quality,
-            'quality_score': self.quality_score,
-            'perfect_reps': self.exercise_stats['perfect_reps'],
-            'form_violations': self.exercise_stats['form_violations'],
-            'form_feedback': self.form_feedback,
-            'reps_per_minute': round(self.counter / (session_duration / 60), 1) if session_duration > 0 else 0
-        }
-        
-        return stats
+        # Return average angle for display purposes
+        return (left_angle + right_angle) / 2
     
-    def save_session_data(self, filename):
-        """Save session data to file"""
-        stats = self.get_exercise_stats()
-        try:
-            with open(filename, 'w') as f:
-                json.dump(stats, f, indent=2)
-            return True
-        except Exception as e:
-            print(f"Error saving session data: {e}")
-            return False
+    # Wrapper functions for different exercises
+    def count_squat(self, keypoints):
+        """Count squat repetitions"""
+        return self.count_exercise(keypoints, 'squat')
     
-    def calibrate_user_profile(self, keypoints):
-        """Calibrate system for user's body proportions"""
-        try:
-            # Calculate basic body ratios
-            if len(keypoints) >= 17:
-                # Shoulder width
-                shoulder_width = abs(keypoints[5][0] - keypoints[6][0])
-                # Hip width  
-                hip_width = abs(keypoints[11][0] - keypoints[12][0])
-                # Torso length
-                torso_length = abs(keypoints[5][1] - keypoints[11][1])
-                
-                if shoulder_width > 0 and hip_width > 0 and torso_length > 0:
-                    self.user_profile['limb_ratios'] = {
-                        'shoulder_hip_ratio': shoulder_width / hip_width,
-                        'torso_length': torso_length
-                    }
-                    print("User profile calibrated successfully")
-                    
-        except Exception as e:
-            print(f"Calibration error: {e}")
-
-# Helper functions
-def both_legs_confidence(left_angle, right_angle, threshold):
-    """Check if both legs meet the threshold with some tolerance"""
-    tolerance = 15
-    return (abs(left_angle - threshold) < tolerance or 
-            abs(right_angle - threshold) < tolerance)
-
-def both_arms_confidence(left_angle, right_angle, threshold):
-    """Check if both arms meet the threshold with some tolerance"""
-    tolerance = 20
-    return (abs(left_angle - threshold) < tolerance or 
-            abs(right_angle - threshold) < tolerance)
+    def count_pushup(self, keypoints):
+        """Count pushup repetitions"""
+        return self.count_exercise(keypoints, 'pushup')
+    
+    def count_situp(self, keypoints):
+        """Count situp repetitions"""
+        return self.count_exercise(keypoints, 'situp')
+    
+    def count_bicep_curl(self, keypoints):
+        """Count bicep curl repetitions"""
+        return self.count_exercise(keypoints, 'bicep_curl')
+    
+    def count_lateral_raise(self, keypoints):
+        """Count lateral raise repetitions"""
+        return self.count_exercise(keypoints, 'lateral_raise')
+    
+    def count_overhead_press(self, keypoints):
+        """Count overhead press repetitions"""
+        return self.count_exercise(keypoints, 'overhead_press')
+    
+    def count_leg_raise(self, keypoints):
+        """Count leg raise repetitions"""
+        return self.count_exercise(keypoints, 'leg_raise')
+    
+    def count_knee_raise(self, keypoints):
+        """Count knee raise repetitions"""
+        return self.count_exercise(keypoints, 'knee_raise')
+    
+    def count_knee_press(self, keypoints):
+        """Count knee press repetitions"""
+        return self.count_exercise(keypoints, 'knee_press')

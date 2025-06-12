@@ -469,6 +469,18 @@ class WorkoutTrackerApp(QMainWindow):
         self.english_action.setChecked(T.current_language == "en")
         self.english_action.triggered.connect(lambda: self.change_language("en"))
         language_menu.addAction(self.english_action)
+
+        # 西班牙语选项
+        self.spanish_action = QAction(T.get("spanish"), self, checkable=True)
+        self.spanish_action.setChecked(T.current_language == "es")
+        self.spanish_action.triggered.connect(lambda: self.change_language("es"))
+        language_menu.addAction(self.spanish_action)
+
+        # 印地语选项
+        self.hindi_action = QAction(T.get("hindi"), self, checkable=True)
+        self.hindi_action.setChecked(T.current_language == "hi")
+        self.hindi_action.triggered.connect(lambda: self.change_language("hi"))
+        language_menu.addAction(self.hindi_action)
         
         # 帮助菜单
         help_menu = menubar.addMenu(T.get("help_menu"))
@@ -660,6 +672,8 @@ class WorkoutTrackerApp(QMainWindow):
             # 更新菜单项选中状态
             self.chinese_action.setChecked(language == "zh")
             self.english_action.setChecked(language == "en")
+            self.spanish_action.setChecked(language == "es")
+            self.hindi_action.setChecked(language == "hi")
             
             # 更新窗口标题
             self.setWindowTitle(T.get("app_title"))

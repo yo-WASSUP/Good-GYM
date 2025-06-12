@@ -35,8 +35,7 @@ class ControlPanel(QWidget):
             "lateral_raise": T.get("lateral_raise"),
             "leg_raise": T.get("leg_raise"),
             "knee_raise": T.get("knee_raise"),
-            "left_knee_press": T.get("left_knee_press"),
-            "right_knee_press": T.get("right_knee_press")
+            "knee_press": T.get("knee_press")
         }
         
         # 初始化模型类型映射 - 只保留RTMPose选项
@@ -545,8 +544,7 @@ class ControlPanel(QWidget):
             "lateral_raise": T.get("lateral_raise"),
             "leg_raise": T.get("leg_raise"),
             "knee_raise": T.get("knee_raise"),
-            "left_knee_press": T.get("left_knee_press"),
-            "right_knee_press": T.get("right_knee_press")
+            "knee_press": T.get("knee_press")
         }
         
         # 更新模型类型映射

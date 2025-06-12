@@ -259,17 +259,11 @@ class Translations:
             "es": "Elevación de rodilla",
             "hi": "घुटने उठाना"
         },
-        "left_knee_press": {
-            "zh": "左侧提膝下压",
-            "en": "Left Knee Press",
-            "es": "Presión de rodilla izquierda",
-            "hi": "बाएं घुटने का दबाव"
-        },
-        "right_knee_press": {
-            "zh": "右侧提膝下压",
-            "en": "Right Knee Press",
-            "es": "Presión de rodilla derecha",
-            "hi": "दाएं घुटने का दबाव"
+        "knee_press": {
+            "zh": "提膝下压",
+            "en": "Knee Press",
+            "es": "Presión de rodilla",
+            "hi": "घुटने का दबाव"
         },
         
         # 状态栏信息

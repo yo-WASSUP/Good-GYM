@@ -40,8 +40,7 @@ class WorkoutStatsPanel(QWidget):
             "overhead_press": T.get("overhead_press"),
             "leg_raise": T.get("leg_raise"),
             "knee_raise": T.get("knee_raise"),
-            "left_knee_press": T.get("left_knee_press"),
-            "right_knee_press": T.get("right_knee_press")
+            "knee_press": T.get("knee_press")
         }
         self.exercise_code_map = {v: k for k, v in self.exercise_name_map.items()}
     
