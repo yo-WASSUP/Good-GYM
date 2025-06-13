@@ -299,7 +299,15 @@
       "left_knee_press": 102,
       "right_knee_press": 105,
       "squat": 61
+    },
+    "2025-06-13": {
+      "squat": 7,
+      "pushup": 9,
+      "leg_raise": 11,
+      "knee_raise": 10,
+      "knee_press": 2,
+      "situp": 16
     }
   },
-  "last_updated": "2025-06-03 17:14:48"
+  "last_updated": "2025-06-13 11:44:53"
 }
