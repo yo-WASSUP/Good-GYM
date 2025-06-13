@@ -1,4 +1,4 @@
-# Good-GYM: AI-Powered Workout Assistant 💪
+# Good-GYM: AI Fitness Assistant 💪
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/yo-WASSUP/Good-GYM?style=social)](https://github.com/yo-WASSUP/Good-GYM/network/members)
 [![GitHub license](https://img.shields.io/github/license/yo-WASSUP/Good-GYM)](https://github.com/yo-WASSUP/Good-GYM/blob/main/LICENSE)
 
-**Intelligent Fitness Assistant Based on RTMPose**
+**AI Fitness Assistant Based on RTMPose**
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -19,6 +19,18 @@
 ## 🆕 Changelog
 
 - **2024-06-07**: Major update! Dropped YOLO models and all GPU support. Now uses only RTMPose for pose detection, and runs on CPU only. Simpler, more compatible, and easier to use.
+- **2024-06-12**：Optimize exercise_counters.py for counting accuracy, code structure optimization
+
+## 🔮 Future Development
+
+- [x] Multi-language interface
+- [x] Improve pose detection accuracy
+- [ ] Add support for more exercise types
+- [ ] Add custom exercise types template
+- [ ] Recognizing Motion Accuracy
+- [ ] Motion Error Correction Indication
+- [ ] Add voice feedback
+- [ ] Mobile Application Support
 
 
 ---
@@ -43,12 +55,9 @@
 
   **Windows EXE package**: 
 
-  [Baidu Netdisk Link](https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) code: 8866
+  [Baidu Netdisk Link](https://pan.baidu.com/s/1pXtzy5SfFp1g4JJx-kCLCQ) code: 8866
 
-  [Google Drive](https://drive.google.com/file/d/1KkNHAu6TAE8QzcyFxLG9K9qmzuRwHJFf/view?usp=drive_link)
-
-  
-  **Note**: Windows version requires an NVIDIA GPU and proper drivers to run
+  [Google Drive](https://drive.google.com/file/d/14CW8kBBc3NolH-59b3wHoZY1dFvKnv2P/view?usp=sharing)
 
 ## 📝 Usage Guide
 
@@ -109,13 +118,9 @@
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+Thanks to RTMPose open source pose detection model: https://github.com/Tau-J/rtmlib
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🔮 Future Development
-
-- [ ] Add support for more exercise types
-- [ ] Improve pose detection accuracy
-- [ ] Add voice feedback
-- [ ] Multi-language interface

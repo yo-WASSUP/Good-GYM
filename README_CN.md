@@ -19,6 +19,18 @@
 ## 🆕 更新日志
 
 - **2024-06-07**：重大更新！已放弃YOLO模型和所有GPU支持，现仅采用RTMPose进行姿态检测，支持CPU运行，兼容性更好，使用更简单。
+- **2024-06-12**：优化exercise_counters.py，提高计数准确性，代码结构优化
+
+## 🔮 开发计划
+
+- [x] 多语言界面
+- [x] 提高姿势检测精度
+- [ ] 添加对更多锻炼类型的支持
+- [ ] 添加自定义锻炼模板
+- [ ] 识别动作准确性
+- [ ] 动作纠错提示
+- [ ] 添加语音交互控制
+- [ ] 移动应用程序支持
 
 ---
 <img src="assets/demo.gif" width="800px" alt="演示">
@@ -49,11 +61,9 @@
 
   **Windows EXE打包版本**：
 
-  [百度网盘链接]( https://pan.baidu.com/s/168Z64JX4iFoIEZom7h8cnA?pwd=8866) 提取码: 8866
+  [百度网盘链接]( https://pan.baidu.com/s/1pXtzy5SfFp1g4JJx-kCLCQ ) 提取码: 8866
 
-  [Google Drive](https://drive.google.com/file/d/1KkNHAu6TAE8QzcyFxLG9K9qmzuRwHJFf/view?usp=drive_link)
-
-  **注意**: Windows版本需要NVIDIA GPU和适当的驱动程序才能运行
+  [Google Drive](https://drive.google.com/file/d/14CW8kBBc3NolH-59b3wHoZY1dFvKnv2P/view?usp=sharing)
 
 ## 📝 使用指南
 
@@ -107,13 +117,8 @@
 
 欢迎贡献代码！请随时提交Pull Request。
 
+感谢RTMPose开源姿态检测模型： https://github.com/Tau-J/rtmlib
+
 ## 📄 许可证
 
 本项目采用MIT许可证 - 详情请参阅LICENSE文件。
-
-## 🔮 开发计划
-
-- [ ] 添加更多运动类型支持
-- [ ] 改进姿态检测精度
-- [ ] 添加语音反馈
-- [ ] 移动应用支持
