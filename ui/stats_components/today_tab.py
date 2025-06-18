@@ -7,43 +7,43 @@ from .base_components import StyledGroupBox
 from core.translations import Translations as T
 
 class TodayProgressTab(QWidget):
-    """今日进度选项卡"""
+    """Today's progress tab"""
     
     def __init__(self, exercise_name_map, exercise_colors, parent=None):
         super().__init__(parent)
         self.exercise_name_map = exercise_name_map
         self.exercise_colors = exercise_colors
         
-        # 初始化组件引用字典
+        # Initialize component reference dictionary
         self.progress_bars = {}
         self.count_labels = {}
         self.exercise_frames = {}
         self.exercise_name_labels = {}
         self.exercise_layouts = {}
         
-        # 设置布局
+        # Setup layout
         self.setup_ui()
         
-        # 默认所有运动项均隐藏，等待设置目标时显示
+        # Hide all exercise items by default, wait for goal setting to display
         self.hide_all_exercises()
         
     def setup_ui(self):
-        """设置 UI 组件"""
+        """Setup UI components"""
         layout = QVBoxLayout(self)
         
-        # 创建今日进度组件
+        # Create today's progress component
         self.progress_group = StyledGroupBox(T.get("today_exercise_progress"))
         progress_layout = QVBoxLayout(self.progress_group)
-        progress_layout.setContentsMargins(15, 20, 15, 15)  # 增加组框内边距
+        progress_layout.setContentsMargins(15, 20, 15, 15)  # Increase group box padding
         
-        # 创建没有目标时显示的消息标签
-        self.no_goals_label = QLabel(T.get("no_goals_message") if hasattr(T, "get") and callable(getattr(T, "get")) else "未设置任何运动目标")
+        # Create message label to display when no goals are set
+        self.no_goals_label = QLabel(T.get("no_goals_message") if hasattr(T, "get") and callable(getattr(T, "get")) else "No exercise goals set")
         self.no_goals_label.setAlignment(Qt.AlignCenter)
         self.no_goals_label.setStyleSheet("color: #7f8c8d; font-size: 16pt; margin: 20px;")
-        self.no_goals_label.setVisible(False)  # 默认隐藏，等待检查目标后决定显示
+        self.no_goals_label.setVisible(False)  # Hidden by default, wait for goal check to decide display
         progress_layout.addWidget(self.no_goals_label)
         
-        # 创建滚动区域和内容容器
+        # Create scroll area and content container
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setFrameShape(QFrame.NoFrame)
@@ -74,18 +74,18 @@ class TodayProgressTab(QWidget):
             }
         """)
         
-        # 创建容器小部件来放置进度项
+        # Create container widget to place progress items
         container_widget = QWidget()
         container_layout = QVBoxLayout(container_widget)
-        container_layout.setSpacing(20)  # 大幅增加项目间间距
-        container_layout.setContentsMargins(10, 10, 15, 10)  # 增加全局内边距
+        container_layout.setSpacing(20)  # Significantly increase spacing between items
+        container_layout.setContentsMargins(10, 10, 15, 10)  # Increase global padding
         
-        # 为每种运动创建进度条
+        # Create progress bar for each exercise type
         for i, (exercise_code, exercise_name) in enumerate(self.exercise_name_map.items()):
-            # 获取运动的颜色
+            # Get exercise color
             color = self.exercise_colors.get(exercise_name, "#3498db")
             
-            # 创建与前面有间隔的分隔线（第一项除外）
+            # Create separator line with spacing from previous item (except first item)
             if i > 0:
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
@@ -93,53 +93,53 @@ class TodayProgressTab(QWidget):
                 separator.setStyleSheet("background-color: #e0e0e0; min-height: 1px; margin: 10px 0;")
                 container_layout.addWidget(separator)
             
-            # 创建运动项容器并记录引用
+            # Create exercise item container and record reference
             exercise_frame = QFrame()
             exercise_frame.setObjectName(f"frame_{exercise_code}")
             exercise_frame.setStyleSheet("background-color: transparent;")
             self.exercise_frames[exercise_code] = exercise_frame
             
-            # 创建垂直布局
+            # Create vertical layout
             item_layout = QVBoxLayout(exercise_frame)
-            item_layout.setSpacing(6)  # 紧凑的元素间距
-            item_layout.setContentsMargins(5, 5, 5, 10)  # 适当的内边距
+            item_layout.setSpacing(6)  # Compact element spacing
+            item_layout.setContentsMargins(5, 5, 5, 10)  # Appropriate padding
             
-            # 保存布局引用
+            # Save layout reference
             self.exercise_layouts[exercise_code] = item_layout
             
-            # 将运动项容器添加到容器布局
+            # Add exercise item container to container layout
             container_layout.addWidget(exercise_frame)
             
-            # 标题和当前计数在同一行 - 使用QWidget作为容器
+            # Title and current count on same line - use QWidget as container
             header_widget = QWidget()
             header_layout = QHBoxLayout(header_widget)
-            header_layout.setContentsMargins(0, 0, 0, 0)  # 无边距
-            header_layout.setSpacing(10)  # 元素间距
+            header_layout.setContentsMargins(0, 0, 0, 0)  # No margins
+            header_layout.setSpacing(10)  # Element spacing
             
-            # 运动名称标签
+            # Exercise name label
             label = QLabel(exercise_name)
             label.setStyleSheet(f"color: {color}; font-weight: bold; font-size: 18pt;")
-            # 保存对标签的引用
+            # Save reference to label
             self.exercise_name_labels[exercise_code] = label
             
-            # 计数标签
+            # Count label
             count_label = QLabel("0 / 0")
             count_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             count_label.setStyleSheet("color: #2c3e50; font-size: 18pt;")
             
-            # 将标签和计数添加到布局
+            # Add label and count to layout
             header_layout.addWidget(label)
             header_layout.addStretch(1)
             header_layout.addWidget(count_label)
             
-            # 添加标题小部件到项目布局
+            # Add header widget to item layout
             item_layout.addWidget(header_widget)
             
-            # 进度条
+            # Progress bar
             progress_bar = QProgressBar()
             progress_bar.setRange(0, 100)
             progress_bar.setValue(0)
-            progress_bar.setFormat("%p%")  # 显示百分比
+            progress_bar.setFormat("%p%")  # Show percentage
             progress_bar.setTextVisible(True)
             progress_bar.setMinimumHeight(22)
             progress_bar.setStyleSheet(f"""
@@ -160,72 +160,72 @@ class TodayProgressTab(QWidget):
                 }}
             """)
             
-            # 添加进度条到项目布局
+            # Add progress bar to item layout
             item_layout.addWidget(progress_bar)
             
-            # 注意：不需要这里的addLayout，因为exercise_frame已经被addWidget到container_layout
+            # Note: No need for addLayout here since exercise_frame has already been addWidget to container_layout
             
-            # 记录引用
+            # Record references
             self.progress_bars[exercise_code] = progress_bar
             self.count_labels[exercise_code] = count_label
             
-        # 添加弹性空间，确保内容向上对齐
+        # Add stretch space to ensure content aligns to top
         container_layout.addStretch()
         
-        # 设置滚动区域的内容
+        # Set scroll area content
         scroll_area.setWidget(container_widget)
         
-        # 设置滚动区域的高度限制，确保不会占用过多空间
-        scroll_area.setMinimumHeight(380)  # 增加最小高度以显示更多内容
-        scroll_area.setMaximumHeight(500)  # 增加最大高度
+        # Set scroll area height limits to ensure it doesn't take up too much space
+        scroll_area.setMinimumHeight(380)  # Increase minimum height to show more content
+        scroll_area.setMaximumHeight(500)  # Increase maximum height
         
-        # 将滚动区域添加到主布局
+        # Add scroll area to main layout
         progress_layout.addWidget(scroll_area)
         
-        # 今日运动总计 - 使用更醒目的样式
+        # Today's exercise total - use more prominent style
         self.total_group = StyledGroupBox(T.get("today_total"))
         total_layout = QVBoxLayout(self.total_group)
         total_layout.setContentsMargins(15, 20, 15, 15)
         
-        # 总计标签
+        # Total label
         total_label = QLabel(T.get("total_completion").format(count=0))
         total_label.setAlignment(Qt.AlignCenter)
         total_label.setStyleSheet("color: #2c3e50; margin: 10px 0; padding: 10px; background-color: #f0f7ff; border-radius: 8px; font-size: 18pt;")
         total_layout.addWidget(total_label)
         
-        # 记录引用
+        # Record reference
         self.total_label = total_label
         
-        # 添加到主布局
-        layout.addWidget(self.progress_group, 4)  # 分配较大的拉伸因子
-        layout.addWidget(self.total_group, 1)  # 分配较小的拉伸因子
+        # Add to main layout
+        layout.addWidget(self.progress_group, 4)  # Allocate larger stretch factor
+        layout.addWidget(self.total_group, 1)  # Allocate smaller stretch factor
         
     def update_progress(self, exercise_code, current, goal):
-        """更新运动进度"""
+        """Update exercise progress"""
         if exercise_code in self.progress_bars:
-            # 如果目标为0，则隐藏该运动项
+            # If goal is 0, hide this exercise item
             if goal <= 0:
                 if exercise_code in self.exercise_frames:
                     self.exercise_frames[exercise_code].setVisible(False)
                 return
                 
-            # 显示该运动项
+            # Show this exercise item
             if exercise_code in self.exercise_frames:
                 self.exercise_frames[exercise_code].setVisible(True)
             
-            # 更新计数标签
+            # Update count label
             self.count_labels[exercise_code].setText(f"{current} / {goal}")
             
-            # 更新进度条
+            # Update progress bar
             progress = min(100, int((current / goal) * 100)) if goal > 0 else 0
             self.progress_bars[exercise_code].setValue(progress)
             
-            # 设置进度条格式
+            # Set progress bar format
             color = self.exercise_colors.get(self.exercise_name_map[exercise_code], "#3498db")
             
-            # 根据完成情况更新视觉反馈
+            # Update visual feedback based on completion status
             if progress >= 100:
-                # 完成状态 - 使用成功绿色进度条
+                # Completed state - use success green progress bar
                 self.progress_bars[exercise_code].setStyleSheet(f"""
                     QProgressBar {{
                         border: 1px solid #bdc3c7;
@@ -243,7 +243,7 @@ class TodayProgressTab(QWidget):
                     }}
                 """)
             else:
-                # 进行中状态 - 使用原来的颜色
+                # In progress state - use original color
                 self.progress_bars[exercise_code].setStyleSheet(f"""
                     QProgressBar {{
                         border: 1px solid #bdc3c7;
@@ -262,52 +262,52 @@ class TodayProgressTab(QWidget):
                 """)
             
     def update_total(self, total_count):
-        """更新总计"""
+        """Update total"""
         self.total_label.setText(T.get("total_completion").format(count=total_count))
         
     def update_language(self, exercise_name_map=None, exercise_code_map=None):
-        """更新界面语言"""
+        """Update interface language"""
         if exercise_name_map:
             self.exercise_name_map = exercise_name_map
             
-            # 更新颜色映射
+            # Update color mapping
             new_exercise_colors = {}
             for code, name in self.exercise_name_map.items():
-                # 直接使用代码作为键，而不是名称
+                # Use code directly as key, not name
                 if code in self.exercise_colors:
                     new_exercise_colors[name] = self.exercise_colors[code]
                     
-            # 更新颜色字典
+            # Update color dictionary
             self.exercise_colors = new_exercise_colors
         
-        # 更新组件标题
+        # Update component titles
         self.progress_group.setTitle(T.get("today_exercise_progress"))
         self.total_group.setTitle(T.get("today_total"))
         
-        # 更新总计标签
+        # Update total label
         total_count = int(self.total_label.text().split(":")[1].strip().split(" ")[0]) if ":" in self.total_label.text() else 0
         self.total_label.setText(T.get("total_completion").format(count=total_count))
         
-        # 直接使用保存的标签引用更新运动名称
+        # Directly use saved label references to update exercise names
         for exercise_code, label in self.exercise_name_labels.items():
             if exercise_code in self.exercise_name_map:
                 exercise_name = self.exercise_name_map[exercise_code]
                 color = self.exercise_colors.get(exercise_name, "#3498db")
                 
-                # 更新标签文本和样式
+                # Update label text and style
                 label.setText(exercise_name)
                 label.setStyleSheet(f"color: {color}; font-weight: bold; font-size: 18pt;")
     
     def hide_all_exercises(self):
-        """隐藏所有运动项"""
+        """Hide all exercise items"""
         for exercise_code in self.exercise_frames:
             self.exercise_frames[exercise_code].setVisible(False)
         
-        # 显示没有目标的提示
+        # Show no goals prompt
         self.no_goals_label.setVisible(True)
     
     def show_exercises_with_goals(self, goals):
-        """显示有目标的运动项"""
+        """Show exercise items with goals"""
         has_visible_exercises = False
         
         for exercise_code, exercise_frame in self.exercise_frames.items():
@@ -316,28 +316,28 @@ class TodayProgressTab(QWidget):
                 exercise_frame.setVisible(True)
                 has_visible_exercises = True
                 
-                # 更新计数标签显示目标值
+                # Update count label to show goal value
                 if exercise_code in self.count_labels:
                     self.count_labels[exercise_code].setText(f"0 / {goal}")
             else:
                 exercise_frame.setVisible(False)
         
-        # 根据是否有可见的运动项决定是否显示提示
+        # Decide whether to show prompt based on whether there are visible exercise items
         self.no_goals_label.setVisible(not has_visible_exercises)
     
     def reset_progress(self):
-        """重置所有进度"""
+        """Reset all progress"""
         for exercise_code in self.progress_bars:
             self.progress_bars[exercise_code].setValue(0)
             
-            # 获取当前标签的目标值部分
+            # Get current label's goal value part
             current_text = self.count_labels[exercise_code].text()
             goal_part = current_text.split("/")[1].strip() if "/" in current_text else "0"
             
-            # 重置计数器显示，保留目标值
+            # Reset counter display, keep goal value
             self.count_labels[exercise_code].setText(f"0 / {goal_part}")
             
-            # 重置进度条样式
+            # Reset progress bar style
             color = self.exercise_colors.get(self.exercise_name_map[exercise_code], "#3498db")
             self.progress_bars[exercise_code].setStyleSheet(f"""
                 QProgressBar {{

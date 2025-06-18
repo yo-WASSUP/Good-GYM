@@ -5,8 +5,8 @@ import os
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 class VideoThread(QThread):
-    """处理视频流的线程，避免UI卡顿"""
-    change_pixmap_signal = pyqtSignal(np.ndarray, float)  # 增加FPS参数
+    """Video stream processing thread to avoid UI freezing"""
+    change_pixmap_signal = pyqtSignal(np.ndarray, float)  # Add FPS parameter
     
     def __init__(self, camera_id=0, width=640, height=480, rotate=True):
         super().__init__()
@@ -15,173 +15,173 @@ class VideoThread(QThread):
         self.height = height
         self.rotate = rotate
         self._run_flag = True
-        self.buffer_size = 1  # 缓冲区大小，设为1避免延迟
-        self.video_file = None  # 本地视频文件路径
-        self.is_camera = True  # 是否使用摄像头
-        self.fps = 30  # 默认帧率
-        self.loop_video = False  # 控制是否循环播放视频
-        self.video_ended = False  # 标记视频是否已结束
+        self.buffer_size = 1  # Buffer size, set to 1 to avoid delay
+        self.video_file = None  # Local video file path
+        self.is_camera = True  # Whether to use camera
+        self.fps = 30  # Default frame rate
+        self.loop_video = False  # Control whether to loop video playback
+        self.video_ended = False  # Mark if video has ended
     
     def set_camera(self, camera_id):
-        """切换摄像头"""
+        """Switch camera"""
         if self.isRunning():
             self._run_flag = False
             self.wait()
         self.camera_id = camera_id
-        self.video_file = None  # 清除视频文件路径
-        self.is_camera = True  # 切换回摄像头模式
+        self.video_file = None  # Clear video file path
+        self.is_camera = True  # Switch back to camera mode
         self._run_flag = True
         self.start()
     
     def set_rotation(self, rotate):
-        """设置是否旋转视频"""
+        """Set whether to rotate video"""
         self.rotate = rotate
         
     def set_resolution(self, width, height):
-        """设置分辨率"""
+        """Set resolution"""
         self.width = width
         self.height = height
         
     def set_video_file(self, file_path, loop=False):
-        """设置视频文件路径
+        """Set video file path
         
         Args:
-            file_path (str): 视频文件路径
-            loop (bool): 是否循环播放视频，默认为False
+            file_path (str): Video file path
+            loop (bool): Whether to loop video playback, default is False
         """
         if self.isRunning():
             self._run_flag = False
             self.wait()
         self.video_file = file_path
-        self.is_camera = False  # 切换到视频文件模式
-        self.loop_video = loop  # 设置是否循环播放
-        self.video_ended = False  # 重置视频结束标志
+        self.is_camera = False  # Switch to video file mode
+        self.loop_video = loop  # Set whether to loop playback
+        self.video_ended = False  # Reset video end flag
         
-        # 预先检测视频宽高比以决定应用哪种旋转模式
+        # Pre-detect video aspect ratio to decide which rotation mode to apply
         self.auto_detect_orientation(file_path)
         
         self._run_flag = True
         self.start()
         
     def auto_detect_orientation(self, file_path):
-        """自动检测视频文件的宽高比并设置适当的旋转模式"""
+        """Automatically detect video file aspect ratio and set appropriate rotation mode"""
         try:
             if not os.path.exists(file_path):
-                print(f"错误：视频文件不存在 {file_path}")
+                print(f"Error: Video file does not exist {file_path}")
                 return
                 
             temp_cap = cv2.VideoCapture(file_path)
             if not temp_cap.isOpened():
-                print(f"错误：无法打开视频文件进行宽高比检测 {file_path}")
+                print(f"Error: Cannot open video file for aspect ratio detection {file_path}")
                 return
                 
-            # 获取原始视频尺寸信息（不依赖帧读取）
+            # Get original video size information (not dependent on frame reading)
             original_width = int(temp_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             original_height = int(temp_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             
-            # 如果能获取到第一帧，使用第一帧的尺寸信息以确认
+            # If first frame can be obtained, use first frame size information to confirm
             ret, first_frame = temp_cap.read()
             if ret:
                 height, width = first_frame.shape[:2]
-                # 检查帧尺寸与视频尺寸是否一致
+                # Check if frame size matches video size
                 if height != original_height or width != original_width:
-                    # 如果有差异，采用帧的尺寸
+                    # If there's a difference, use frame size
                     original_width = width
                     original_height = height
-                    print("帧尺寸与视频尺寸不同，使用帧的尺寸信息")
+                    print("Frame size differs from video size, using frame size information")
             
-            # 释放临时摄像头
+            # Release temporary camera
             temp_cap.release()
             
-            # 计算宽高比
+            # Calculate aspect ratio
             aspect_ratio = original_width / original_height
             
-            # 判断视频方向
-            # 竖向比例小于0.8，横向比例大于1.3，中间值为正方形
+            # Determine video orientation
+            # Vertical ratio less than 0.8, horizontal ratio greater than 1.3, middle value is square
             is_vertical = aspect_ratio < 0.8
             
-            # 如果是竖向视频(9:16)
+            # If it's a vertical video (9:16)
             if is_vertical:
-                print(f"检测到竖向视频 (宽高比: {aspect_ratio:.2f}, 尺寸: {original_width}x{original_height})")
-                self.rotate = False  # 不发生旋转
-                # 设置宽度为原高度的一半，保持敬业的竖向显示
-                self.width = max(360, original_width)  # 确保最小宽度
+                print(f"Detected vertical video (aspect ratio: {aspect_ratio:.2f}, size: {original_width}x{original_height})")
+                self.rotate = False  # No rotation
+                # Set width to half of original height, maintain professional vertical display
+                self.width = max(360, original_width)  # Ensure minimum width
                 self.height = int(self.width * original_height / original_width)
-            # 否则为横向视频(16:9)
+            # Otherwise it's a horizontal video (16:9)
             else:
-                print(f"检测到横向视频 (宽高比: {aspect_ratio:.2f}, 尺寸: {original_width}x{original_height})")
-                self.rotate = False  # 同样不旋转
-                # 调整尺寸保持横向显示
-                self.height = 360  # 固定高度
-                self.width = int(self.height * aspect_ratio)  # 根据原始宽高比计算宽度
+                print(f"Detected horizontal video (aspect ratio: {aspect_ratio:.2f}, size: {original_width}x{original_height})")
+                self.rotate = False  # Also no rotation
+                # Adjust size to maintain horizontal display
+                self.height = 360  # Fixed height
+                self.width = int(self.height * aspect_ratio)  # Calculate width based on original aspect ratio
         except Exception as e:
-            print(f"视频宽高比检测出错: {str(e)}")
-            # 出错时使用默认值
+            print(f"Video aspect ratio detection error: {str(e)}")
+            # Use default values when error occurs
             self.rotate = False
         except Exception as e:
-            print(f"视频宽高比检测出错: {str(e)}")
-            # 出错时保持原始设置
+            print(f"Video aspect ratio detection error: {str(e)}")
+            # Keep original settings when error occurs
     
     def run(self):
-        """主线程循环"""
-        # 根据模式打开视频源（摄像头或文件）
+        """Main thread loop"""
+        # Open video source based on mode (camera or file)
         if self.is_camera:
             self.cap = cv2.VideoCapture(self.camera_id)
             if not self.cap.isOpened():
-                print(f"错误：无法打开摄像头 {self.camera_id}")
+                print(f"Error: Cannot open camera {self.camera_id}")
                 return
                 
-            # 设置分辨率和缓冲区（仅适用于摄像头）
+            # Set resolution and buffer (only applicable to camera)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
             self.cap.set(cv2.CAP_PROP_BUFFERSIZE, self.buffer_size)
             
-            # 摄像头模式默认旋转（默认为竖屏模式）
+            # Camera mode defaults to rotation (default to portrait mode)
             self.rotate = True
             
-            print(f"摄像头已打开：ID={self.camera_id}, 分辨率={int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
+            print(f"Camera opened: ID={self.camera_id}, resolution={int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
         else:
-            # 打开视频文件
+            # Open video file
             if not os.path.exists(self.video_file):
-                print(f"错误：视频文件不存在 {self.video_file}")
+                print(f"Error: Video file does not exist {self.video_file}")
                 return
                 
             self.cap = cv2.VideoCapture(self.video_file)
             if not self.cap.isOpened():
-                print(f"错误：无法打开视频文件 {self.video_file}")
+                print(f"Error: Cannot open video file {self.video_file}")
                 return
                 
             video_name = os.path.basename(self.video_file)
-            print(f"视频文件已打开：{video_name}, 分辨率={int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
+            print(f"Video file opened: {video_name}, resolution={int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))}x{int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))}")
             
-            # 获取实际帧率（可能与请求的不同）
+            # Get actual frame rate (may differ from requested)
             real_fps = int(self.cap.get(cv2.CAP_PROP_FPS))
             if real_fps == 0:
-                real_fps = 30  # 默认值
+                real_fps = 30  # Default value
             
-            # 限制最高帧率为30fps
+            # Limit maximum frame rate to 30fps
             self.fps = min(real_fps, 30)
-            print(f"帧率: 原始{real_fps}fps, 当前显示{self.fps}fps")
+            print(f"Frame rate: original {real_fps}fps, current display {self.fps}fps")
         
-        # 初始化FPS计算
+        # Initialize FPS calculation
         frame_count = 0
         start_time = time.time()
         fps_display = 0
-        update_interval = 10  # 每10帧更新一次FPS显示
+        update_interval = 10  # Update FPS display every 10 frames
         
-        # 运行标志
+        # Run flag
         while self._run_flag:
             ret, frame = self.cap.read()
             if ret:
-                # 降采样到更小的尺寸进行处理
+                # Downsample to smaller size for processing
                 frame = cv2.resize(frame, (self.width, self.height))
                 
-                # 如果需要旋转（竖屏模式）
+                # If rotation is needed (portrait mode)
                 if self.rotate:
-                    # 旋转90度，得到9:16比例 (使用INTER_NEAREST加速旋转)
+                    # Rotate 90 degrees to get 9:16 ratio (use INTER_NEAREST to speed up rotation)
                     frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
                 
-                # 计算FPS
+                # Calculate FPS
                 frame_count += 1
                 if frame_count % update_interval == 0:
                     end_time = time.time()
@@ -190,38 +190,38 @@ class VideoThread(QThread):
                     frame_count = 0
                     start_time = time.time()
                 
-                # 发送帧和FPS信息
+                # Send frame and FPS information
                 self.change_pixmap_signal.emit(frame, fps_display)
             else:
-                # 当读取视频文件失败时，如果是视频文件模式
+                # When reading video file fails, if in video file mode
                 if not self.is_camera and self.video_file:
-                    # 检查是否要循环播放
+                    # Check if loop playback is needed
                     if self.loop_video:
-                        # 循环模式：重置到开头继续播放
+                        # Loop mode: reset to beginning and continue playback
                         self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                         ret, frame = self.cap.read()
                         if ret:
-                            # 发送帧和FPS信息
+                            # Send frame and FPS information
                             self.change_pixmap_signal.emit(frame, fps_display)
                         else:
-                            # 如果重置仍然无法读取，输出警告
-                            print("警告：视频文件播放结束且无法重新循环")
+                            # If reset still cannot read, output warning
+                            print("Warning: Video file playback ended and cannot loop again")
                             self.video_ended = True
                     else:
-                        # 非循环模式：标记视频结束
+                        # Non-loop mode: mark video as ended
                         if not self.video_ended:
-                            print("视频播放完成，已停止在最后一帧")
+                            print("Video playback completed, stopped at last frame")
                             self.video_ended = True
                 else:
-                    print("警告：无法读取视频帧")
+                    print("Warning: Cannot read video frame")
             
-            # 按照目标帧率定时读取帧并控制播放速度
-            time.sleep(1/self.fps)  # 限制为指定帧率
+            # Read frames at target frame rate and control playback speed
+            time.sleep(1/self.fps)  # Limit to specified frame rate
         
-        # 释放资源
+        # Release resources
         self.cap.release()
     
     def stop(self):
-        """停止线程"""
+        """Stop thread"""
         self._run_flag = False
         self.wait()

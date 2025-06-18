@@ -1,12 +1,12 @@
 class Translations:
-    """翻译模块，提供中英文文本支持"""
+    """Translation module, provides Chinese-English text support"""
     
-    # 当前语言（默认中文）
+    # Current language (default Chinese)
     current_language = "zh"
     
-    # 中英文翻译字典
+    # Chinese-English translation dictionary
     translations = {
-        # 应用标题和通用
+        # Application title and general
         "app_title": {
             "zh": "AI健身助手 Good-GYM",
             "en": "AI Workout Assistant Good-GYM",
@@ -20,7 +20,7 @@ class Translations:
             "hi": "तैयार"
         },
         
-        # 菜单项
+        # Menu items
         "tools_menu": {
             "zh": "工具",
             "en": "Tools",
@@ -112,7 +112,7 @@ class Translations:
             "hi": "के बारे में"
         },
         
-        # 控制面板
+        # Control panel
         "exercise_data": {
             "zh": "运动数据",
             "en": "Exercise Data",
@@ -203,140 +203,146 @@ class Translations:
             "es": "Abajo",
             "hi": "नीचे"
         },
-        "prepare": {
-            "zh": "准备",
-            "en": "Prepare",
-            "es": "Preparar",
-            "hi": "तैयार करें"
+        "rest": {
+            "zh": "休息",
+            "en": "Rest",
+            "es": "Descanso",
+            "hi": "आराम"
         },
         
-        # 运动类型
-        "overhead_press": {
-            "zh": "推举",
-            "en": "Overhead Press",
-            "es": "Pressión sobre la cabeza",
-            "hi": "ओवरहेड प्रेस"
-        },
-        "bicep_curl": {
-            "zh": "二头弯举",
-            "en": "Bicep Curl",
-            "es": "Curl de bíceps",
-            "hi": "बाइसेप कर्ल"
-        },
+        # Exercise types
         "squat": {
             "zh": "深蹲",
             "en": "Squat",
             "es": "Sentadilla",
-            "hi": "स्क्वाट"
+            "hi": "स्क्वैट"
         },
         "pushup": {
             "zh": "俯卧撑",
-            "en": "Push Up",
-            "es": "Flexión de brazos",
-            "hi": "पुश अप"
+            "en": "Push-up",
+            "es": "Flexión",
+            "hi": "पुश-अप"
         },
         "situp": {
             "zh": "仰卧起坐",
-            "en": "Sit Up",
-            "es": "Abdominales",
-            "hi": "सिट अप"
+            "en": "Sit-up",
+            "es": "Abdominal",
+            "hi": "सिट-अप"
+        },
+        "bicep_curl": {
+            "zh": "弯举",
+            "en": "Bicep Curl",
+            "es": "Curl de bíceps",
+            "hi": "बाइसेप कर्ल"
         },
         "lateral_raise": {
             "zh": "侧平举",
             "en": "Lateral Raise",
             "es": "Elevación lateral",
-            "hi": "लैटरल रेज़"
+            "hi": "लेटरल रेज़"
+        },
+        "overhead_press": {
+            "zh": "推举",
+            "en": "Overhead Press",
+            "es": "Press de hombro",
+            "hi": "ओवरहेड प्रेस"
         },
         "leg_raise": {
-            "zh": "左右交替抬腿",
+            "zh": "抬腿",
             "en": "Leg Raise",
             "es": "Elevación de piernas",
             "hi": "लेग रेज़"
         },
         "knee_raise": {
-            "zh": "交替提膝",
+            "zh": "抬膝",
             "en": "Knee Raise",
-            "es": "Elevación de rodilla",
-            "hi": "घुटने उठाना"
+            "es": "Elevación de rodillas",
+            "hi": "नी रेज़"
         },
         "knee_press": {
-            "zh": "提膝下压",
+            "zh": "压膝",
             "en": "Knee Press",
-            "es": "Presión de rodilla",
-            "hi": "घुटने का दबाव"
+            "es": "Presión de rodillas",
+            "hi": "नी प्रेस"
         },
         
-        # 状态栏信息
+        # Status bar messages
         "welcome": {
-            "zh": "欢迎使用AI健身助手! 已加载健身计划功能",
-            "en": "Welcome to AI Workout Assistant! Workout plan loaded",
-            "es": "Bienvenido al Asistente de Ejercicio AI! Plan de entrenamiento cargado",
-            "hi": "एआई व्यायाम सहायक में आपका स्वागत है! व्यायाम योजना लोड हो गई"
+            "zh": "欢迎使用AI健身助手",
+            "en": "Welcome to AI Workout Assistant",
+            "es": "Bienvenido al Asistente de Ejercicio AI",
+            "hi": "एआई व्यायाम सहायक में आपका स्वागत है"
         },
-        "gpu_enabled": {
-            "zh": "(GPU加速已启用)",
-            "en": "(GPU acceleration enabled)",
-            "es": "(Aceleración por GPU habilitada)",
-            "hi": "(GPU त्वरण सक्षम है)"
-        },
-        "cpu_mode": {
-            "zh": "(CPU模式)",
-            "en": "(CPU mode)",
-            "es": "(Modo CPU)",
-            "hi": "(सीपीयू मोड)"
+        "language_changed": {
+            "zh": "语言已更改",
+            "en": "Language changed",
+            "es": "Idioma cambiado",
+            "hi": "भाषा बदली गई"
         },
         "switched_to_workout": {
-            "zh": "已切换到健身运动模式，正在重新启动摄像头...",
-            "en": "Switched to workout mode, restarting camera...",
-            "es": "Cambiado al modo de entrenamiento, reiniciando la cámara...",
-            "hi": "व्यायाम मोड पर स्विच किया गया, कैमरा फिर से शुरू किया जा रहा है..."
+            "zh": "已切换到健身运动模式",
+            "en": "Switched to workout mode",
+            "es": "Cambiado a modo de entrenamiento",
+            "hi": "व्यायाम मोड पर स्विच किया गया"
         },
         "switched_to_stats": {
             "zh": "已切换到统计管理模式",
             "en": "Switched to statistics mode",
-            "es": "Cambiado al modo de estadísticas",
+            "es": "Cambiado a modo de estadísticas",
             "hi": "आँकड़े मोड पर स्विच किया गया"
         },
-        "language_changed": {
-            "zh": "语言已更改为中文",
-            "en": "Language changed to English",
-            "es": "Idioma cambiado a español",
-            "hi": "भाषा हिंदी में बदल गई"
+        "counter_reset": {
+            "zh": "计数器已重置",
+            "en": "Counter reset",
+            "es": "Contador reiniciado",
+            "hi": "काउंटर रीसेट"
+        },
+        "goal_reached": {
+            "zh": "目标达成！",
+            "en": "Goal reached!",
+            "es": "¡Objetivo alcanzado!",
+            "hi": "लक्ष्य प्राप्त!"
+        },
+        "goal_updated": {
+            "zh": "目标已更新",
+            "en": "Goal updated",
+            "es": "Objetivo actualizado",
+            "hi": "लक्ष्य अपडेट किया गया"
         },
         
-        # 统计面板
-        "workout_stats_panel": {
-            "zh": "健身计划与统计",
-            "en": "Workout Plan and Statistics",
-            "es": "Plan de entrenamiento y estadísticas",
-            "hi": "व्यायाम योजना और आँकड़े"
+        # Statistics panel
+        "fitness_statistics": {
+            "zh": "健身统计",
+            "en": "Fitness Statistics",
+            "es": "Estadísticas de fitness",
+            "hi": "फिटनेस आँकड़े"
         },
-        "today_progress": {
+        "today_tab": {
             "zh": "今日进度",
             "en": "Today's Progress",
             "es": "Progreso de hoy",
             "hi": "आज की प्रगति"
         },
-        "week_stats": {
-            "zh": "本周统计",
-            "en": "Weekly Stats",
-            "es": "Estadísticas semanales",
-            "hi": "साप्ताहिक आँकड़े"
+        "week_tab": {
+            "zh": "本周进度",
+            "en": "Weekly Progress",
+            "es": "Progreso semanal",
+            "hi": "साप्ताहिक प्रगति"
         },
-        "month_stats": {
-            "zh": "本月统计",
-            "en": "Monthly Stats",
-            "es": "Estadísticas mensuales",
-            "hi": "मासिक आँकड़े"
+        "month_tab": {
+            "zh": "本月进度",
+            "en": "Monthly Progress",
+            "es": "Progreso mensual",
+            "hi": "मासिक प्रगति"
         },
-        "fitness_goals": {
+        "goals_tab": {
             "zh": "目标设置",
             "en": "Goals Setting",
             "es": "Configuración de objetivos",
             "hi": "लक्ष्य सेट करना"
         },
         
-        # 每个标签页的内容
+        # Content for each tab
         "today_exercise_progress": {
             "zh": "今日运动进度",
             "en": "Today's Exercise Progress",
@@ -416,7 +422,7 @@ class Translations:
             "hi": "लक्ष्य सहेजें"
         },
         
-        # 关于对话框
+        # About dialog
         "about_title": {
             "zh": "关于AI健身助手",
             "en": "About AI Workout Assistant",
@@ -430,7 +436,7 @@ class Translations:
             "hi": "एआई व्यायाम सहायक v1.0\n\nएआई आधारित पोस पहचान फिटनेस सिस्टम\n\nविभिन्न व्यायामों के लिए स्वचालित गिनती और पोस विश्लेषण का समर्थन करता है"
         },
         
-        # 视频相关
+        # Video related
         "open_video": {
             "zh": "打开视频文件",
             "en": "Open Video File",
@@ -456,7 +462,7 @@ class Translations:
             "hi": "वीडियो लोड किया गया: "
         },
         
-        # 模型相关
+        # Model related
         "model_type": {
             "zh": "模型选择:",
             "en": "Model:",
@@ -515,14 +521,14 @@ class Translations:
     
     @classmethod
     def get(cls, key):
-        """获取当前语言的翻译文本"""
+        """Get translation text for current language"""
         if key in cls.translations:
             return cls.translations[key][cls.current_language]
         return key
     
     @classmethod
     def set_language(cls, language):
-        """设置当前语言"""
+        """Set current language"""
         if language in ["zh", "en", "es", "hi"]:
             cls.current_language = language
             return True

@@ -2,42 +2,42 @@ from PyQt5.QtGui import QColor, QPalette, QFont
 from PyQt5.QtCore import Qt
 
 class AppStyles:
-    """应用程序样式定义"""
+    """Application style definitions"""
     
-    # 运动类型颜色映射
+    # Exercise type color mapping
     EXERCISE_COLORS = {
-        # 中文名称
-        "深蹲": "#3498db",      # 蓝色
-        "俯卧撑": "#e74c3c",    # 红色
-        "仰卧起坐": "#2ecc71",  # 绿色
-        "二头弯举": "#f39c12", # 黄色
-        "三头臂屈伸": "#f39c12", # 黄色
-        "侧平举": "#9b59b6",    # 紫色
-        "颈前推举": "#1abc9c",  # 青色
-        "左右交替抬腿": "#e67e22", # 橙色
-        "高抬腿": "#16a085",   # 深青色
-        "提膝下压": "#8e44ad",    # 深紫色
-        "左侧提膝下压": "#8e44ad",   # 深紫色
-        "右侧提膝下压": "#6c3483",    # 深紫色变种
+        # Chinese names
+        "深蹲": "#3498db",      # Blue
+        "俯卧撑": "#e74c3c",    # Red
+        "仰卧起坐": "#2ecc71",  # Green
+        "二头弯举": "#f39c12", # Yellow
+        "三头臂屈伸": "#f39c12", # Yellow
+        "侧平举": "#9b59b6",    # Purple
+        "颈前推举": "#1abc9c",  # Cyan
+        "左右交替抬腿": "#e67e22", # Orange
+        "高抬腿": "#16a085",   # Dark cyan
+        "提膝下压": "#8e44ad",    # Dark purple
+        "左侧提膝下压": "#8e44ad",   # Dark purple
+        "右侧提膝下压": "#6c3483",    # Dark purple variant
         
-        # 英文名称
-        "Squat": "#3498db",      # 蓝色
-        "Push Up": "#e74c3c",    # 红色
-        "Sit Up": "#2ecc71",  # 绿色
-        "Bicep Curl": "#f39c12", # 黄色
-        "Tricep Extension": "#f39c12", # 黄色
-        "Lateral Raise": "#9b59b6",    # 紫色
-        "Overhead Press": "#1abc9c",  # 青色
-        "Leg Raise": "#e67e22", # 橙色
-        "Knee Raise": "#16a085",   # 深青色
-        "Knee Press": "#8e44ad",    # 深紫色
-        "Left Knee Press": "#8e44ad",   # 深紫色
-        "Right Knee Press": "#6c3483"    # 深紫色变种
+        # English names
+        "Squat": "#3498db",      # Blue
+        "Push Up": "#e74c3c",    # Red
+        "Sit Up": "#2ecc71",  # Green
+        "Bicep Curl": "#f39c12", # Yellow
+        "Tricep Extension": "#f39c12", # Yellow
+        "Lateral Raise": "#9b59b6",    # Purple
+        "Overhead Press": "#1abc9c",  # Cyan
+        "Leg Raise": "#e67e22", # Orange
+        "Knee Raise": "#16a085",   # Dark cyan
+        "Knee Press": "#8e44ad",    # Dark purple
+        "Left Knee Press": "#8e44ad",   # Dark purple
+        "Right Knee Press": "#6c3483"    # Dark purple variant
     }
     
     @staticmethod
     def get_window_palette():
-        """获取窗口调色板"""
+        """Get window palette"""
         palette = QPalette()
         palette.setColor(QPalette.Window, QColor(248, 249, 250))
         palette.setColor(QPalette.WindowText, QColor(52, 58, 64))
@@ -45,7 +45,7 @@ class AppStyles:
     
     @staticmethod
     def get_global_stylesheet():
-        """获取全局样式表"""
+        """Get global stylesheet"""
         return """
             QWidget {
                 font-family: 'Segoe UI', Arial, sans-serif;
@@ -77,7 +77,7 @@ class AppStyles:
     
     @staticmethod
     def get_exercise_combo_style():
-        """获取运动选择下拉框样式"""
+        """Get exercise selection dropdown style"""
         return """
             QComboBox {
                 font-size: 12pt;
@@ -105,7 +105,7 @@ class AppStyles:
     
     @staticmethod
     def get_counter_value_style(color="#27ae60"):
-        """获取计数器样式"""
+        """Get counter style"""
         return f"""
             color: {color}; 
             background-color: #f7f9f9; 
@@ -119,7 +119,7 @@ class AppStyles:
     
     @staticmethod
     def get_success_counter_style():
-        """获取成功计数器样式"""
+        """Get success counter style"""
         return """
             color: #2ecc71; 
             background-color: #f7f9f9; 
@@ -133,7 +133,7 @@ class AppStyles:
     
     @staticmethod
     def get_angle_value_style(color="#34495e", highlight=False):
-        """获取角度值样式"""
+        """Get angle value style"""
         border_color = "#e74c3c" if highlight else "#e8e8e8"
         text_color = "#e74c3c" if highlight else color
         
@@ -150,7 +150,7 @@ class AppStyles:
     
     @staticmethod
     def get_phase_indicator_style(active=False, color="#3498db"):
-        """获取阶段指示器样式"""
+        """Get phase indicator style"""
         bg_color = color if active else "#bdc3c7"
         text_color = "white" if active else "#ecf0f1"
         
@@ -167,7 +167,7 @@ class AppStyles:
     
     @staticmethod
     def get_group_box_style():
-        """获取分组框样式"""
+        """Get group box style"""
         return """
             QGroupBox { 
                 font-weight: bold; 
@@ -184,7 +184,7 @@ class AppStyles:
     
     @staticmethod
     def get_phase_group_style():
-        """获取运动状态组样式"""
+        """Get exercise state group style"""
         return """
             QGroupBox { 
                 font-weight: bold; 
@@ -202,7 +202,7 @@ class AppStyles:
     
     @staticmethod
     def get_camera_combo_style():
-        """获取相机选择下拉框样式"""
+        """Get camera selection dropdown style"""
         return """
             QComboBox {
                 font-size: 12pt;
@@ -230,7 +230,7 @@ class AppStyles:
         
     @staticmethod
     def get_increase_button_style():
-        """获取增加次数按钮样式 - 绿色"""
+        """Get increase count button style - Green"""
         return """
             QPushButton { 
                 background-color: #2ecc71; 
@@ -249,7 +249,7 @@ class AppStyles:
     
     @staticmethod
     def get_decrease_button_style():
-        """获取减少次数按钮样式 - 橙色"""
+        """Get decrease count button style - Orange"""
         return """
             QPushButton { 
                 background-color: #e67e22; 
@@ -268,7 +268,7 @@ class AppStyles:
     
     @staticmethod
     def get_reset_button_style():
-        """获取重置按钮样式"""
+        """Get reset button style"""
         return """
             QPushButton { 
                 background-color: #95a5a6; 
@@ -287,7 +287,7 @@ class AppStyles:
     
     @staticmethod
     def get_confirm_button_style():
-        """获取确认记录按钮样式 - 蓝色"""
+        """Get confirm record button style - Blue"""
         return """
             QPushButton { 
                 background-color: #3498db; 
@@ -306,7 +306,7 @@ class AppStyles:
         
     @staticmethod
     def get_success_button_style():
-        """获取成功按钮样式 - 绿色"""
+        """Get success button style - Green"""
         return """
             QPushButton { 
                 background-color: #27ae60; 
@@ -325,10 +325,10 @@ class AppStyles:
     
     @staticmethod
     def get_toggle_button_style(checked=False):
-        """获取切换按钮样式"""
-        # 为开和关状态设置不同的样式
+        """Get toggle button style"""
+        # Set different styles for on and off states
         if checked:
-            # 开启状态 - 绿色背景
+            # On state - green background
             return """
                 QPushButton {
                     background-color: #2ecc71;
@@ -341,7 +341,7 @@ class AppStyles:
                     max-height: 30px;
                     font-weight: bold;
                     font-size: 12pt;
-                    padding-right: 25px; /* 留出空间给指示器 */
+                    padding-right: 25px; /* Leave space for indicator */
                     text-align: center;
                 }
                 QPushButton:hover {
@@ -349,7 +349,7 @@ class AppStyles:
                 }
             """
         else:
-            # 关闭状态 - 灰色背景
+            # Off state - gray background
             return """
                 QPushButton {
                     background-color: #bdc3c7;
@@ -362,7 +362,7 @@ class AppStyles:
                     max-height: 30px;
                     font-weight: bold;
                     font-size: 12pt;
-                    padding-left: 25px; /* 留出空间给指示器 */
+                    padding-left: 25px; /* Leave space for indicator */
                     text-align: center;
                 }
                 QPushButton:hover {

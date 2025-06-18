@@ -7,9 +7,9 @@ from .custom_widgets import SwitchControl
 from core.translations import Translations as T
 
 class ControlPanel(QWidget):
-    """控制面板组件"""
+    """Control panel component"""
     
-    # 定义信号
+    # Define signals
     exercise_changed = pyqtSignal(str)
     counter_reset = pyqtSignal()
     camera_changed = pyqtSignal(int)
@@ -18,14 +18,14 @@ class ControlPanel(QWidget):
     counter_increase = pyqtSignal(int)
     counter_decrease = pyqtSignal(int)
     record_confirmed = pyqtSignal(str)
-    model_changed = pyqtSignal(str)  # 添加模型切换信号
+    model_changed = pyqtSignal(str)  # Add model switching signal
     mirror_toggled = pyqtSignal(bool)
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.exercise_colors = AppStyles.EXERCISE_COLORS
         
-        # 初始化运动类型映射
+        # Initialize exercise type mappings
         self.exercise_display_map = {
             "overhead_press": T.get("overhead_press"),
             "bicep_curl": T.get("bicep_curl"),
@@ -38,49 +38,49 @@ class ControlPanel(QWidget):
             "knee_press": T.get("knee_press")
         }
         
-        # 初始化模型类型映射 - 只保留RTMPose选项
+        # Initialize model type mappings - only keep RTMPose options
         self.model_display_map = {
             "lightweight": T.get("lightweight"),
             "balanced": T.get("balanced"),
             "performance": T.get("performance")
         }
         
-        # 初始化反向映射
+        # Initialize reverse mappings
         self.exercise_code_map = {v: k for k, v in self.exercise_display_map.items()}
         self.current_exercise = "overhead_press"
         
-        # 设置布局
+        # Setup layout
         self.layout = QVBoxLayout(self)
         self.setup_ui()
     
     def setup_ui(self):
-        """设置控制面板UI"""
-        # 应用标题
+        """Setup control panel UI"""
+        # Application title
         self.title_label = QLabel(T.get("app_title"))
         self.title_label.setFont(QFont("Arial", 20, QFont.Bold))
         self.title_label.setAlignment(Qt.AlignCenter)
         self.title_label.setStyleSheet("font-size: 25pt; font-weight: bold; color: #2c3e50; margin-bottom: 15px;")
         self.layout.addWidget(self.title_label)
         
-        # 添加信息组
+        # Add info group
         self.setup_info_group()
         
-        # 添加控制选项组
+        # Add control options group
         self.setup_controls_group()
         
-        # 添加阶段显示组
+        # Add phase display group
         self.setup_phase_group()
         
-        # 添加弹性空间
+        # Add stretch space
         self.layout.addStretch()
     
     def setup_info_group(self):
-        """设置运动信息组"""
+        """Setup exercise info group"""
         self.info_group = QGroupBox(T.get("exercise_data"))
         self.info_group.setStyleSheet(AppStyles.get_group_box_style())
         info_layout = QVBoxLayout(self.info_group)
         
-        # 创建计数器显示
+        # Create counter display
         counter_layout = QHBoxLayout()
         self.counter_label = QLabel(T.get("count_completed"))
         self.counter_label.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold;")
@@ -95,12 +95,12 @@ class ControlPanel(QWidget):
         counter_layout.addWidget(self.counter_value, 1, Qt.AlignCenter)
         info_layout.addLayout(counter_layout)
         
-        # 添加间隔
+        # Add spacing
         spacer = QWidget()
         spacer.setMinimumHeight(10)
         info_layout.addWidget(spacer)
         
-        # 角度显示 - 注释掉这部分代码
+        # Angle display - comment out this code section
         # angle_layout = QHBoxLayout()
         # self.angle_label = QLabel(T.get("current_angle"))
         # self.angle_label.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold;")
@@ -118,26 +118,26 @@ class ControlPanel(QWidget):
         self.layout.addWidget(self.info_group)
     
     def setup_controls_group(self):
-        """设置控制选项组"""
+        """Setup control options group"""
         self.controls_group = QGroupBox(T.get("control_options"))
         self.controls_group.setStyleSheet(AppStyles.get_group_box_style())
         controls_layout = QVBoxLayout(self.controls_group)
-        controls_layout.setSpacing(12)  # 增加整体布局间距
+        controls_layout.setSpacing(12)  # Increase overall layout spacing
         
-        # 运动类型选择
+        # Exercise type selection
         exercise_layout = QHBoxLayout()
         self.exercise_label = QLabel(T.get("exercise_type"))
-        self.exercise_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
+        self.exercise_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # Reduce font size
         self.exercise_combo = QComboBox()
         
-        # 设置下拉菜单的样式
+        # Set dropdown menu style
         self.exercise_combo.setStyleSheet(AppStyles.get_exercise_combo_style())
         
-        # 使用我们已经定义好的运动类型映射
+        # Use our predefined exercise type mappings
         for code, display in self.exercise_display_map.items():
             self.exercise_combo.addItem(display)
         
-        # 设置默认选中项
+        # Set default selected item
         overhead_press_text = self.exercise_display_map.get("overhead_press", "")
         if overhead_press_text:
             self.exercise_combo.setCurrentText(overhead_press_text)
@@ -148,19 +148,19 @@ class ControlPanel(QWidget):
         exercise_layout.addWidget(self.exercise_combo, 1)
         controls_layout.addLayout(exercise_layout)
         
-        # 模型选择
+        # Model selection
         model_layout = QHBoxLayout()
         self.model_label = QLabel(T.get("model_type"))
-        self.model_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
+        self.model_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # Reduce font size
         
         self.model_combo = QComboBox()
         self.model_combo.setStyleSheet(AppStyles.get_exercise_combo_style())
         
-        # 添加模型选项
+        # Add model options
         for model_code, model_display in self.model_display_map.items():
             self.model_combo.addItem(model_display, model_code)
             
-        # 设置默认模型为RTMPose平衡模式
+        # Set default model to RTMPose balanced mode
         rtmpose_balanced_index = list(self.model_display_map.keys()).index("balanced")
         self.model_combo.setCurrentIndex(rtmpose_balanced_index)
         self.model_combo.currentIndexChanged.connect(self._on_model_changed)
@@ -169,10 +169,10 @@ class ControlPanel(QWidget):
         model_layout.addWidget(self.model_combo, 1)
         controls_layout.addLayout(model_layout)
         
-        # 摄像头选择
+        # Camera selection
         camera_layout = QHBoxLayout()
         self.camera_label = QLabel(T.get("camera"))
-        self.camera_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # 减小字体大小
+        self.camera_label.setStyleSheet("color: #2c3e50; font-size: 16pt; font-weight: bold;")  # Reduce font size
         
         self.camera_combo = QComboBox()
         self.camera_combo.addItems(["0", "1"])
@@ -182,57 +182,57 @@ class ControlPanel(QWidget):
         camera_layout.addWidget(self.camera_label)
         camera_layout.addWidget(self.camera_combo, 1)
         
-        # 添加间隔
+        # Add spacing
         spacer = QWidget()
         spacer.setMinimumHeight(5)
         controls_layout.addWidget(spacer)
         
         controls_layout.addLayout(camera_layout)
         
-        # 竖屏模式切换
+        # Portrait mode toggle
         self.rotation_switch = SwitchControl(T.get("rotation_mode"))
         self.rotation_switch.switched.connect(self._on_rotation_toggled)
         controls_layout.addWidget(self.rotation_switch)
         
-        # 骨架显示切换
+        # Skeleton display toggle
         self.skeleton_switch = SwitchControl(T.get("skeleton_display"))
         self.skeleton_switch.switched.connect(self._on_skeleton_toggled)
         controls_layout.addWidget(self.skeleton_switch)
         
-        # 镜像模式切换
+        # Mirror mode toggle
         self.mirror_switch = SwitchControl(T.get("mirror_mode"))
         self.mirror_switch.switched.connect(self._on_mirror_toggled)
         controls_layout.addWidget(self.mirror_switch)
         
-        # 添加间隔
+        # Add spacing
         spacer = QWidget()
         spacer.setMinimumHeight(5)
         controls_layout.addWidget(spacer)
         
-        # 计数操作按钮行
+        # Counter operation button row
         counter_buttons_layout = QHBoxLayout()
-        # 减少次数按钮 - 橙红色
+        # Decrease count button - orange-red
         self.decrease_button = QPushButton(T.get("decrease"))
         self.decrease_button.setFixedSize(80, 32)
         self.decrease_button.setStyleSheet(AppStyles.get_decrease_button_style())
         self.decrease_button.clicked.connect(self._on_decrease_counter)
         counter_buttons_layout.addWidget(self.decrease_button)
 
-        # 增加次数按钮 - 绿色
+        # Increase count button - green
         self.increase_button = QPushButton(T.get("increase"))
         self.increase_button.setFixedSize(80, 32)
         self.increase_button.setStyleSheet(AppStyles.get_increase_button_style())
         self.increase_button.clicked.connect(self._on_increase_counter)
         counter_buttons_layout.addWidget(self.increase_button)
         
-        # 计数归零按钮 - 灰色
+        # Reset counter button - gray
         self.reset_button = QPushButton(T.get("reset"))
         self.reset_button.setFixedSize(80, 32)
         self.reset_button.setStyleSheet(AppStyles.get_reset_button_style())
         self.reset_button.clicked.connect(self._on_reset_counter)
         counter_buttons_layout.addWidget(self.reset_button)
 
-        # 确认记录按钮 - 蓝色系
+        # Confirm record button - blue system
         self.confirm_button = QPushButton(T.get("confirm"))
         self.confirm_button.setFixedSize(80, 32)
         self.confirm_button.setStyleSheet(AppStyles.get_confirm_button_style())
@@ -244,83 +244,83 @@ class ControlPanel(QWidget):
         self.layout.addWidget(self.controls_group)
     
     def _on_increase_counter(self):
-        """手动增加计数器值"""
+        """Manually increase counter value"""
         try:
-            # 获取当前计数值
+            # Get current count value
             current_count = int(self.counter_value.text())
             
-            # 每次增加 1 次
+            # Increase by 1 each time
             new_count = current_count + 1
             
-            # 更新显示
+            # Update display
             self.counter_value.setText(str(new_count))
             
-            # 发送信号
+            # Send signal
             self.counter_increase.emit(new_count)
             
-            # 显示成功动画
+            # Show success animation
             self.show_success_animation()
             
         except ValueError:
-            # 如果计数值不是有效数字，重置为 1
+            # If count value is not a valid number, reset to 1
             self.counter_value.setText("1")
             self.counter_increase.emit(1)
 
     def _on_decrease_counter(self):
-        """手动减少计数器值"""
+        """Manually decrease counter value"""
         try:
-            # 获取当前计数值
+            # Get current count value
             current_count = int(self.counter_value.text())
             
-            # 确保计数不会为负
+            # Ensure count doesn't go negative
             new_count = max(0, current_count - 1)
             
-            # 更新显示
+            # Update display
             self.counter_value.setText(str(new_count))
             
-            # 发送信号
+            # Send signal
             self.counter_decrease.emit(new_count)
             
-            # 更新样式
+            # Update style
             self.update_counter_style()
             
         except ValueError:
-            # 如果计数值不是有效数字，重置为 0
+            # If count value is not a valid number, reset to 0
             self.counter_value.setText("0")
             self.counter_decrease.emit(0)
 
     def _on_confirm_record(self):
-        """确认记录当前运动结果"""
+        """Confirm record current exercise result"""
         try:
-            # 获取当前计数值
+            # Get current count value
             current_count = int(self.counter_value.text())
             
-            # 只有当计数大于 0 时才记录
+            # Only record if count is greater than 0
             if current_count > 0:
-                # 发送确认记录信号，带上当前运动类型
+                # Send confirm record signal with current exercise type
                 self.record_confirmed.emit(self.current_exercise)
                 
-                # 显示成功样式 - 将背景修改为绿色
+                # Show success style - change background to green
                 self.confirm_button.setStyleSheet(
                     AppStyles.get_success_button_style()
                 )
                 
-                # 1.5秒后恢复正常样式
+                # Return to normal style after 1.5 seconds
                 QTimer.singleShot(1500, lambda: self.confirm_button.setStyleSheet(
                     AppStyles.get_confirm_button_style()
                 ))
                 
         except ValueError:
-            # 如果计数值不是有效数字，直接忽略
+            # If count value is not a valid number, ignore directly
             pass
     
     def setup_phase_group(self):
-        """设置阶段显示组"""
+        """Setup phase display group"""
         self.phase_group = QGroupBox(T.get("phase_display"))
         self.phase_group.setStyleSheet(AppStyles.get_group_box_style())
         phase_layout = QVBoxLayout(self.phase_group)
         
-        # 当前阶段标签
+        # Current phase label
         phase_label_layout = QHBoxLayout()
         self.phase_title = QLabel(T.get("current_phase"))
         self.phase_title.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold;")
@@ -328,10 +328,10 @@ class ControlPanel(QWidget):
         phase_label_layout.addWidget(self.phase_title)
         phase_layout.addLayout(phase_label_layout)
         
-        # 创建轮廓图示器
+        # Create outline indicator
         phase_indicator = QHBoxLayout()
         
-        # 当前阶段图示
+        # Current phase indicator
         self.up_indicator = QLabel("↑")
         self.up_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(False))
         self.up_indicator.setAlignment(Qt.AlignCenter)
@@ -340,26 +340,26 @@ class ControlPanel(QWidget):
         self.down_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(False))
         self.down_indicator.setAlignment(Qt.AlignCenter)
         
-        # 添加到布局
+        # Add to layout
         phase_indicator.addWidget(self.up_indicator)
         phase_indicator.addWidget(self.down_indicator)
         
-        # 添加到布局
+        # Add to layout
         phase_layout.addLayout(phase_indicator)
         
-        # 阶段值显示
+        # Phase value display
         self.stage_value = QLabel(T.get("prepare"))
         self.stage_value.setStyleSheet("color: #3498db; font-size: 24pt; font-weight: bold;")
         self.stage_value.setAlignment(Qt.AlignCenter)
         self.stage_value.setFixedSize(180, 60)
         
-        # 添加当前阶段标签
+        # Add current phase label
         phase_text_layout = QHBoxLayout()
         phase_text_layout.addWidget(self.stage_value, 0, Qt.AlignCenter)
         
         phase_layout.addLayout(phase_text_layout)
         
-        # 给相位情况留出一些额外空间
+        # Leave some extra space for phase situation
         spacer = QWidget()
         spacer.setMinimumHeight(20)
         phase_layout.addWidget(spacer)
@@ -367,8 +367,8 @@ class ControlPanel(QWidget):
         self.layout.addWidget(self.phase_group)
     
     def _on_exercise_changed(self, exercise_display):
-        """运动类型更改处理"""
-        # 检查exercise_display是否为空或不在映射中
+        """Exercise type change handler"""
+        # Check if exercise_display is empty or not in mapping
         if not exercise_display or exercise_display not in self.exercise_code_map:
             return
             
@@ -378,79 +378,79 @@ class ControlPanel(QWidget):
         self.update_counter_style()
     
     def _on_reset_counter(self):
-        """重置计数器处理"""
+        """Reset counter handler"""
         self.counter_reset.emit()
     
     def _on_camera_changed(self, index):
-        """摄像头更改处理"""
+        """Camera change handler"""
         self.camera_changed.emit(index)
     
     def _on_rotation_toggled(self, checked):
-        """旋转模式切换处理"""
-        # 发送信号
+        """Rotation mode toggle handler"""
+        # Send signal
         self.rotation_toggled.emit(checked)
     
     def _on_skeleton_toggled(self, checked):
-        """骨架显示切换处理"""
-        # 发送信号
+        """Skeleton display toggle handler"""
+        # Send signal
         self.skeleton_toggled.emit(checked)
     
     def _on_model_changed(self, index):
-        """RTMPose模式改变处理"""
-        # 获取当前选中的模式
+        """RTMPose mode change handler"""
+        # Get currently selected mode
         model_mode = self.model_combo.currentData()
-        # 发出信号通知主应用程序
+        # Emit signal to notify main application
         self.model_changed.emit(model_mode)
     
     def _on_mirror_toggled(self, checked):
-        """镜像模式切换处理"""
+        """Mirror mode toggle handler"""
         self.mirror_toggled.emit(checked)
     
     def update_counter(self, value):
-        """更新计数值"""
+        """Update counter value"""
         old_count = int(self.counter_value.text() or "0")
         new_count = int(value)
         
-        # 更新计数器显示
+        # Update counter display
         self.counter_value.setText(str(value))
         
-        # 如果是增加，显示动画
+        # If increased, show animation
         if new_count > old_count:
             self.show_success_animation()
     
     def update_angle(self, angle_text, exercise_type=None):
-        """更新角度显示"""
+        """Update angle display"""
         if exercise_type:
-            # 设置角度文本
+            # Set angle text
             self.angle_value.setText(f"{angle_text}°")
             
-            # 根据角度值和运动类型更新颜色
+            # Update color based on angle value and exercise type
             try:
                 current_exercise = self.exercise_display_map.get(exercise_type, "bicep_curl")
                 current_color = self.exercise_colors.get(current_exercise, "#3498db")
                 
-                # 确定是否需要高亮显示
+                # Determine if highlighting is needed
                 highlight = False
                 angle_value = float(angle_text)
                 
-                if exercise_type == "squat" and angle_value < 120:  # 深蹲下限点
+                if exercise_type == "squat" and angle_value < 120:  # Squat lower limit point
                     highlight = True
-                elif exercise_type == "pushup" and angle_value < 100:  # 俱卧撞下限点
+                elif exercise_type == "pushup" and angle_value < 100:  # Pushup lower limit point
                     highlight = True
-                elif exercise_type == "leg_raise" and angle_value > 90:  # 抬腿上限点
+                elif exercise_type == "leg_raise" and angle_value > 90:  # Leg raise upper limit point
                     highlight = True
-                elif exercise_type == "knee_raise" and angle_value > 100:  # 提膝上限点
+                elif exercise_type == "knee_raise" and angle_value > 100:  # Knee raise upper limit point
                     highlight = True
-                elif exercise_type == "knee_press" and (angle_value < 100 or angle_value > 160):  # 提膝下压的关键点
+                elif exercise_type == "knee_press" and (angle_value < 100 or angle_value > 160):  # Knee press key points
                     highlight = True
                 
-                # 设置样式
+                # Set style
                 self.angle_value.setStyleSheet(AppStyles.get_angle_value_style(current_color, highlight))
             except Exception as e:
-                print(f"更新角度样式时出错: {e}")
+                print(f"Error updating angle style: {e}")
     
     def update_phase(self, stage):
-        """更新阶段显示"""
+        """Update phase display"""
         if stage == "up":
             self.stage_value.setText(T.get("up"))
             self.up_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(True))
@@ -465,21 +465,21 @@ class ControlPanel(QWidget):
             self.down_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(False))
     
     def update_stage(self, stage, exercise_type):
-        """更新运动阶段"""
+        """Update exercise stage"""
         if not stage:
             return
             
         self.stage_value.setText(stage)
         
         try:
-            # 更新阶段指示器
+            # Update stage indicator
             current_exercise = self.exercise_display_map.get(exercise_type, "")
             
-            # 如果找不到对应的预设颜色，使用默认颜色
+            # If preset color not found, use default color
             if current_exercise in AppStyles.EXERCISE_COLORS:
                 current_color = AppStyles.EXERCISE_COLORS[current_exercise]
             else:
-                current_color = "#3498db"  # 默认使用蓝色
+                current_color = "#3498db"  # Default use blue
             
             if stage == "up":
                 self.up_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(True, current_color))
@@ -489,52 +489,52 @@ class ControlPanel(QWidget):
                 self.up_indicator.setStyleSheet(AppStyles.get_phase_indicator_style(False))
         except Exception as e:
             print(f"Error in update_stage: {e}")
-            # 出错时使用默认颜色
+            # Use default color on error
             current_color = "#3498db"
     
     def show_success_animation(self):
-        """显示计数增加的成功动画"""
+        """Show success animation for counter increase"""
         self.counter_value.setStyleSheet(AppStyles.get_success_counter_style())
     
     def update_counter_style(self):
-        """更新计数器样式为当前运动的颜色"""
+        """Update counter style to current exercise color"""
         try:
-            # 获取当前运动类型的显示名称
+            # Get current exercise type display name
             current_exercise = self.exercise_display_map.get(self.current_exercise, "")
             
-            # 如果找不到对应的预设颜色，使用默认颜色
+            # If preset color not found, use default color
             if current_exercise in AppStyles.EXERCISE_COLORS:
                 current_color = AppStyles.EXERCISE_COLORS[current_exercise]
             else:
-                current_color = "#3498db"  # 默认使用蓝色
+                current_color = "#3498db"  # Default use blue
                 
             self.counter_value.setStyleSheet(AppStyles.get_counter_value_style(current_color))
         except Exception as e:
             print(f"Error in update_counter_style: {e}")
-            # 出错时使用默认颜色
+            # Use default color on error
             self.counter_value.setStyleSheet(AppStyles.get_counter_value_style("#3498db"))
     
     def reset_counter_style(self):
-        """重置计数器样式"""
+        """Reset counter style"""
         try:
-            # 获取当前运动类型的显示名称
+            # Get current exercise type display name
             current_exercise = self.exercise_display_map.get(self.current_exercise, "")
             
-            # 如果找不到对应的预设颜色，使用默认颜色
+            # If preset color not found, use default color
             if current_exercise in AppStyles.EXERCISE_COLORS:
                 current_color = AppStyles.EXERCISE_COLORS[current_exercise]
             else:
-                current_color = "#3498db"  # 默认使用蓝色
+                current_color = "#3498db"  # Default use blue
                 
             self.counter_value.setStyleSheet(AppStyles.get_counter_value_style(current_color))
         except Exception as e:
             print(f"Error in reset_counter_style: {e}")
-            # 出错时使用默认颜色
+            # Use default color on error
             self.counter_value.setStyleSheet(AppStyles.get_counter_value_style("#3498db"))
         
     def update_language(self):
-        """更新界面语言"""
-        # 更新运动类型映射
+        """Update interface language"""
+        # Update exercise type mappings
         self.exercise_display_map = {
             "overhead_press": T.get("overhead_press"),
             "bicep_curl": T.get("bicep_curl"),
@@ -547,17 +547,17 @@ class ControlPanel(QWidget):
             "knee_press": T.get("knee_press")
         }
         
-        # 更新模型类型映射
+        # Update model type mappings
         self.model_display_map = {
             "lightweight": T.get("lightweight"),
             "balanced": T.get("balanced"),
             "performance": T.get("performance")
         }
         
-        # 更新反向映射
+        # Update reverse mappings
         self.exercise_code_map = {v: k for k, v in self.exercise_display_map.items()}
         
-        # 更新UI文本
+        # Update UI text
         self.title_label.setText(T.get("app_title"))
         self.controls_group.setTitle(T.get("control_options"))
         self.info_group.setTitle(T.get("exercise_data"))
@@ -568,46 +568,46 @@ class ControlPanel(QWidget):
         self.model_label.setText(T.get("model_type"))  
         self.camera_label.setText(T.get("camera"))
         
-        # 更新开关文本
+        # Update switch text
         self.rotation_switch.label.setText(T.get("rotation_mode"))
         self.skeleton_switch.label.setText(T.get("skeleton_display"))
         self.mirror_switch.label.setText(T.get("mirror_mode"))
         
-        # 更新按钮文本
+        # Update button text
         self.increase_button.setText(T.get("increase"))
         self.decrease_button.setText(T.get("decrease"))
         self.reset_button.setText(T.get("reset"))
         self.confirm_button.setText(T.get("confirm"))
         
-        # 更新阶段标签
+        # Update phase label
         self.phase_title.setText(T.get(self.current_phase) if hasattr(self, "current_phase") else "")
         
-        # 更新组合框
+        # Update combo boxes
         self._update_combo_items(self.exercise_combo, self.exercise_display_map)
-        self._update_combo_items(self.model_combo, self.model_display_map)  # 更新模型选择框
+        self._update_combo_items(self.model_combo, self.model_display_map)  # Update model selection box
 
     def _update_combo_items(self, combo_box, item_map):
-        """更新组合框内容"""
-        # 保存当前选择的数据
+        """Update combo box content"""
+        # Save current selected data
         current_data = combo_box.currentData()
         current_text = combo_box.currentText()
         
-        # 清空组合框
+        # Clear combo box
         combo_box.clear()
         
-        # 重新填充选项
+        # Refill options
         for code, display in item_map.items():
             combo_box.addItem(display, code)
         
-        # 尝试恢复先前选中的项
+        # Try to restore previously selected item
         if current_data:
-            # 如果有数据，根据数据恢复
+            # If there's data, restore based on data
             for i in range(combo_box.count()):
                 if combo_box.itemData(i) == current_data:
                     combo_box.setCurrentIndex(i)
                     break
         elif current_text:
-            # 否则尝试根据文本恢复
+            # Otherwise try to restore based on text
             for i in range(combo_box.count()):
                 if combo_box.itemText(i) == current_text:
                     combo_box.setCurrentIndex(i)
