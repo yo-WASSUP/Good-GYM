@@ -10,6 +10,8 @@
 
 **AI健身助手**
 
+[![App Store 下载](https://img.shields.io/badge/App_Store-下载-black?logo=apple&logoColor=white)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
 [English](README.md) | [中文](README_CN.md)
 
 [![小红书视频介绍](https://img.shields.io/badge/小红书-视频介绍-ff2442)](
@@ -24,6 +26,7 @@ https://www.xiaohongshu.com/explore/69a3fc8f000000001a01d824?xsec_token=YBdCMhNY
 - **2025-11-14**：由于异步姿态检测存在准确率问题，已恢复到同步姿态检测。修复了从统计界面切换回检测界面时闪退的问题。
 - **2025-11-15**：新增运动类型数据库功能！所有运动配置现在统一管理在 `data/exercises.json` 文件中，支持自定义添加、修改运动类型，无需修改代码。
 - **2026-03-04**：增加可选GPU加速功能，支持NVIDIA显卡
+- **2026-03-28**：新增移动端支持，iOS App 正式上线
 
 ## 🔮 开发计划
 
@@ -32,11 +35,29 @@ https://www.xiaohongshu.com/explore/69a3fc8f000000001a01d824?xsec_token=YBdCMhNY
 - [x] 添加对更多锻炼类型的支持
 - [x] 添加自定义锻炼模板
 - [x] 识别动作准确性
-- [ ] 移动应用程序支持
+- [x] 移动应用程序支持
 - [ ] 动作纠错提示
 - [ ] 添加语音交互控制
 
 ---
+
+<div align="center">
+
+### 📱 立即下载 Good-GYM iOS App
+
+<a href="https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB">
+<img src="assets/Screenshot-ch-train.jpg" width="250px" alt="Good-GYM iOS App">
+</a>
+<a href="https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB">
+<img src="assets/Screenshot-ch-appstore.jpg" width="250px" alt="Good-GYM App Store">
+</a>
+
+[![App Store 下载](https://img.shields.io/badge/App_Store-下载-black?logo=apple&logoColor=white&style=for-the-badge)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
+</div>
+
+---
+
 <img src="assets/demo.gif" width="800px" alt="演示">
 
 <img src="assets/demo-status.gif" width="800px" alt="演示">
@@ -61,9 +82,12 @@ https://www.xiaohongshu.com/explore/69a3fc8f000000001a01d824?xsec_token=YBdCMhNY
 
 ## 📦 快速下载
 
-- 如果您不想配置Python环境，可以直接下载我们打包好的可执行文件：
+### 📱 iOS App
 
-  **Windows EXE打包版本**：
+  [![App Store 下载](https://img.shields.io/badge/App_Store-下载-black?logo=apple&logoColor=white&style=for-the-badge)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
+### 💻 Windows 桌面版
+- 如果您不想配置Python环境，可以直接下载我们打包好的可执行文件：
 
   [百度网盘链接]( https://pan.baidu.com/s/1xzZjwUmnXLaWatqPcSE1zw ) 提取码: 8866
 
@@ -191,6 +215,8 @@ pip install nvidia-cudnn-cu12 nvidia-cublas-cu12 nvidia-cuda-runtime-cu12 nvidia
 
 ## 🖼️ 应用截图
 
+### 桌面版
+
 <img src="assets/Screenshot-ch-1.png" width="600px" alt="截图1">
 
 <img src="assets/Screenshot-ch-2.png" width="600px" alt="截图2">
@@ -200,6 +226,10 @@ pip install nvidia-cudnn-cu12 nvidia-cublas-cu12 nvidia-cuda-runtime-cu12 nvidia
 <img src="assets/Screenshot-ch-4.png" width="600px" alt="截图4">
 
 <img src="assets/Screenshot-ch-5.png" width="600px" alt="截图5">
+
+### iOS App
+
+<img src="assets/Screenshot-ch-train.jpg" width="250px" alt="训练界面"> <img src="assets/Screenshot-ch-history.jpg" width="250px" alt="历史记录"> <img src="assets/Screenshot-ch-goal.jpg" width="250px" alt="目标设置"> <img src="assets/Screenshot-ch-setting.jpg" width="250px" alt="设置"> <img src="assets/Screenshot-ch-appstore.jpg" width="250px" alt="App Store">
 
 ## 🤝 贡献
 

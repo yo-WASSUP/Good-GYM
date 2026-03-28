@@ -10,6 +10,8 @@
 
 **AI Fitness Assistant**
 
+[![Download on the App Store](https://img.shields.io/badge/Download_on_the-App_Store-black?logo=apple&logoColor=white)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
 [English](README.md) | [中文](README_CN.md)
 
 [![LinkedIn introduction](https://img.shields.io/badge/LinkedIn-介绍-0077B5)](https://www.linkedin.com/posts/huihuang-tang_ai-computervision-opencv-activity-7325469166591770624-Bbyx?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD7qaoMBbw89mcxb0dNh_O4ezc8EFShoOtU)
@@ -23,6 +25,7 @@
 - **2025-11-14**: Reverted asynchronous pose detection due to accuracy issues, restored synchronous pose detection. Fixed crash when switching from statistics mode back to detection mode.
 - **2025-11-15**: New exercise database feature! All exercise configurations are now managed in `data/exercises.json` file. You can easily add, modify, or remove exercise types without modifying code.
 - **2026-03-04**: Add optional GPU acceleration support, now supports NVIDIA GPUs
+- **2026-03-28**: Add mobile application support, now supports IOS  
 
 ## 🔮 Future Development
 
@@ -31,12 +34,30 @@
 - [x] Add support for more exercise types
 - [x] Add custom exercise types template
 - [x] Recognizing Motion Accuracy
-- [ ] Mobile Application Support
+- [x] Mobile Application Support
 - [ ] Motion Error Correction Indication
 - [ ] Add voice feedback
 
 
 ---
+
+<div align="center">
+
+### 📱 Try Good-GYM on iOS
+
+<a href="https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB">
+<img src="assets/Screenshot-ch-train.jpg" width="250px" alt="Good-GYM iOS App">
+</a>
+<a href="https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB">
+<img src="assets/Screenshot-ch-appstore.jpg" width="250px" alt="Good-GYM App Store">
+</a>
+
+[![Download on the App Store](https://img.shields.io/badge/Download_on_the-App_Store-black?logo=apple&logoColor=white&style=for-the-badge)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
+</div>
+
+---
+
 <img src="assets/demo-en.gif" width="800px" alt="演示">
 
 <img src="assets/demo-status-en.gif" width="800px" alt="演示">
@@ -54,9 +75,13 @@
 - **Runs locally** - Complete privacy
 
 ## 📦 Direct Download
-- If you don't want to set up a Python environment, you can download our pre-packaged executable:
 
-  **Windows EXE package**: 
+### 📱 iOS App
+
+  [![Download on the App Store](https://img.shields.io/badge/Download_on_the-App_Store-black?logo=apple&logoColor=white&style=for-the-badge)](https://apps.apple.com/cn/app/goodgym/id6761142874?l=en-GB)
+
+### 💻 Windows Desktop
+- If you don't want to set up a Python environment, you can download our pre-packaged executable:
 
   [Baidu Netdisk Link](https://pan.baidu.com/s/1xzZjwUmnXLaWatqPcSE1zw) code: 8866
 
@@ -190,6 +215,8 @@ The application will auto-detect GPU availability at startup. You can toggle GPU
 
 ## 🖼️ Screenshots
 
+### Desktop
+
 <img src="assets/Screenshot-en-1.png" width="600px" alt="Screenshot 1">
 
 <img src="assets/Screenshot-en-2.png" width="600px" alt="Screenshot 2">
@@ -199,6 +226,10 @@ The application will auto-detect GPU availability at startup. You can toggle GPU
 <img src="assets/Screenshot-en-4.png" width="600px" alt="Screenshot 4">
 
 <img src="assets/Screenshot-en-5.png" width="600px" alt="Screenshot 5">
+
+### iOS App
+
+<img src="assets/Screenshot-ch-train.jpg" width="250px" alt="Training"> <img src="assets/Screenshot-ch-history.jpg" width="250px" alt="History"> <img src="assets/Screenshot-ch-goal.jpg" width="250px" alt="Goals"> <img src="assets/Screenshot-ch-setting.jpg" width="250px" alt="Settings"> <img src="assets/Screenshot-ch-appstore.jpg" width="250px" alt="App Store">
 
 ## 🤝 Contributing
 
