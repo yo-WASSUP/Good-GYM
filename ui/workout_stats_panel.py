@@ -70,6 +70,8 @@ class WorkoutStatsPanel(QWidget):
                             display_name = config.get('name_zh', '')
                         elif current_lang == 'en':
                             display_name = config.get('name_en', '')
+                        elif current_lang == 'ru':
+                            display_name = config.get('name_ru', '')
                         else:
                             # Fallback to English if language not supported
                             display_name = config.get('name_en', '')

@@ -73,7 +73,13 @@ class MenuManager:
         self.main_window.english_action.setChecked(T.current_language == "en")
         self.main_window.english_action.triggered.connect(lambda: self.main_window.change_language("en"))
         language_menu.addAction(self.main_window.english_action)
-        
+
+        # RUSSIAN
+        self.main_window.russian_action = QAction(T.get("russian"), self.main_window, checkable=True)
+        self.main_window.russian_action.setChecked(T.current_language == "ru")
+        self.main_window.russian_action.triggered.connect(lambda: self.main_window.change_language("ru"))
+        language_menu.addAction(self.main_window.russian_action)
+
         # 帮助菜单
         help_menu = menubar.addMenu(T.get("help_menu"))
         
@@ -94,7 +100,8 @@ class MenuManager:
             # 更新菜单项选择状态
             self.main_window.chinese_action.setChecked(language == "zh")
             self.main_window.english_action.setChecked(language == "en")
-            
+            self.main_window.russian_action.setChecked(language == "ru")
+
             # 更新窗口标题
             self.main_window.setWindowTitle(T.get("app_title"))
             

@@ -32,7 +32,21 @@ class AppStyles:
         "Knee Raise": "#16a085",   # Dark cyan
         "Knee Press": "#8e44ad",    # Dark purple
         "Left Knee Press": "#8e44ad",   # Dark purple
-        "Right Knee Press": "#6c3483"    # Dark purple variant
+        "Right Knee Press": "#6c3483",    # Dark purple variant
+        
+        # Russian names
+        "Приседание": "#3498db", 
+        "Отжимание": "#e74c3c", 
+        "Подъём туловища": "#2ecc71",
+        "Сгибание рук на бицепс": "#f39c12",
+        "Разгибание трицепса": "#f39c12",
+        "Подъём рук в стороны": "#9b59b6",
+        "Жим над головой": "#1abc9c",
+        "Подъём ног": "#e67e22",
+        "Подъём колена": "#16a085",
+        "Нажатие колен": "#8e44ad",
+        "Левое нажатие колена": "#8e44ad",
+        "Правое нажатие колена": "#6c3483",
     }
     
     @staticmethod

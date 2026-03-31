@@ -3,6 +3,7 @@
     "squat": {
       "name_zh": "深蹲",
       "name_en": "Squat",
+      "name_ru": "Приседание",
       "down_angle": 110,
       "up_angle": 160,
       "keypoints": {
@@ -27,6 +28,7 @@
     "pushup": {
       "name_zh": "俯卧撑",
       "name_en": "Push-up",
+      "name_ru": "Отжимание",
       "down_angle": 130,
       "up_angle": 160,
       "keypoints": {
@@ -51,6 +53,7 @@
     "situp": {
       "name_zh": "仰卧起坐",
       "name_en": "Sit-up",
+      "name_ru": "Подъём туловища",
       "down_angle": 145,
       "up_angle": 160,
       "keypoints": {
@@ -75,6 +78,7 @@
     "bicep_curl": {
       "name_zh": "弯举",
       "name_en": "Bicep Curl",
+      "name_ru": "Сгибание рук на бицепс",
       "down_angle": 160,
       "up_angle": 60,
       "keypoints": {
@@ -99,6 +103,7 @@
     "lateral_raise": {
       "name_zh": "侧平举",
       "name_en": "Lateral Raise",
+      "name_ru": "Подъём рук в стороны",
       "down_angle": 30,
       "up_angle": 80,
       "keypoints": {
@@ -123,6 +128,7 @@
     "overhead_press": {
       "name_zh": "推举",
       "name_en": "Overhead Press",
+      "name_ru": "Жим над головой",
       "down_angle": 100,
       "up_angle": 150,
       "keypoints": {
@@ -147,6 +153,7 @@
     "leg_raise": {
       "name_zh": "抬腿",
       "name_en": "Leg Raise",
+      "name_ru": "Подъём ног",
       "down_angle": 130,
       "up_angle": 160,
       "keypoints": {
@@ -171,6 +178,7 @@
     "knee_raise": {
       "name_zh": "抬膝",
       "name_en": "Knee Raise",
+      "name_ru": "Подъём колена",
       "down_angle": 110,
       "up_angle": 160,
       "keypoints": {
@@ -195,6 +203,7 @@
     "knee_press": {
       "name_zh": "压膝",
       "name_en": "Knee Press",
+      "name_ru": "Нажатие колен",
       "down_angle": 110,
       "up_angle": 160,
       "keypoints": {
@@ -219,6 +228,7 @@
     "crunch": {
       "name_zh": "卷腹",
       "name_en": "Crunch",
+      "name_ru": "Скручивания",
       "down_angle": 170,
       "up_angle": 150,
       "keypoints": {
