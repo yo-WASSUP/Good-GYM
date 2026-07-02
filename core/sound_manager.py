@@ -1,4 +1,5 @@
 import os
+import sys
 from PyQt5.QtCore import QUrl, QObject
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 
@@ -12,7 +13,10 @@ class SoundManager(QObject):
     def init_sounds(self):
         """Initialize all sound effects"""
         # Set paths for various sound effects
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if getattr(sys, 'frozen', False):
+            base_dir = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
+        else:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.count_sound_path = os.path.join(base_dir, "assets", "count.mp3")
         self.succeed_sound_path = os.path.join(base_dir, "assets", "succeed.mp3")
         self.milestone_sound_path = os.path.join(base_dir, "assets", "milestone.mp3")

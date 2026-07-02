@@ -24,6 +24,10 @@ class MenuManager:
         self.main_window.toggle_skeleton_action.setChecked(False)  
         self.main_window.toggle_skeleton_action.triggered.connect(lambda checked: self.main_window.toggle_skeleton(checked))
         tools_menu.addAction(self.main_window.toggle_skeleton_action)
+        self.main_window.toggle_mirror_action = QAction(T.get("mirror_mode"), self.main_window, checkable=True)
+        self.main_window.toggle_mirror_action.setChecked(getattr(self.main_window, "mirror_mode", True))
+        self.main_window.toggle_mirror_action.triggered.connect(lambda checked: self.main_window.toggle_mirror(checked))
+        tools_menu.addAction(self.main_window.toggle_mirror_action)
         
         # 旋转模式选项
         self.main_window.toggle_rotation_action = QAction(T.get("rotation_mode"), self.main_window, checkable=True)
@@ -101,10 +105,14 @@ class MenuManager:
             # 更新菜单文本
             self.main_window.menuBar().clear()
             self.setup_menu_bar()
+            if hasattr(self.main_window, 'update_language'):
+                self.main_window.update_language()
             
             # 更新控制面板文本
             if hasattr(self.main_window, 'control_panel'):
                 self.main_window.control_panel.update_language()
+            if hasattr(self.main_window, 'status_rail'):
+                self.main_window.status_rail.update_language()
             
             # 更新统计面板文本
             if hasattr(self.main_window, 'stats_panel'):

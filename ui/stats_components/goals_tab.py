@@ -47,17 +47,17 @@ class GoalsTab(QWidget):
             }
             QScrollBar:vertical {
                 width: 14px;
-                background: #f0f0f0;
+                background: #101720;
                 margin: 2px;
                 border-radius: 7px;
             }
             QScrollBar::handle:vertical {
-                background: #bdc3c7;
+                background: #2A3644;
                 min-height: 40px;
                 border-radius: 7px;
             }
             QScrollBar::handle:vertical:hover {
-                background: #a0a0a0;
+                background: #4CE0B3;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0px;
@@ -82,7 +82,7 @@ class GoalsTab(QWidget):
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
                 separator.setFrameShadow(QFrame.Sunken)
-                separator.setStyleSheet("background-color: #e0e0e0; min-height: 1px; margin: 10px 0;")
+                separator.setStyleSheet("background-color: #263241; min-height: 1px; margin: 10px 0;")
                 container_layout.addWidget(separator)
             
             # Create container widget to place horizontal layout
@@ -100,7 +100,7 @@ class GoalsTab(QWidget):
             
             # Goal definition label
             self.target_labels[exercise_code] = QLabel(T.get("daily_goals") + ":")
-            self.target_labels[exercise_code].setStyleSheet("font-size: 16pt;")
+            self.target_labels[exercise_code].setStyleSheet("color: #C8D3DE; font-size: 14pt; font-weight: bold;")
             self.target_labels[exercise_code].setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             goal_layout.addStretch(1)  # Add stretch space
             goal_layout.addWidget(self.target_labels[exercise_code])
@@ -117,23 +117,25 @@ class GoalsTab(QWidget):
             # Improved style
             spinbox.setStyleSheet("""
                 QSpinBox {
-                    border: 2px solid #bdc3c7;
-                    border-radius: 10px;
+                    border: 1px solid #2A3644;
+                    border-radius: 8px;
                     padding: 5px;
-                    font-size: 16pt;
+                    color: #E8EEF5;
+                    background-color: #101720;
+                    font-size: 15pt;
                     font-weight: bold;
                 }
                 QSpinBox:hover {
-                    border-color: #3498db;
+                    border-color: #4CE0B3;
                 }
                 QSpinBox::up-button, QSpinBox::down-button {
                     width: 25px;
                     height: 18px;
-                    border-radius: 5px;
-                    background-color: #ecf0f1;
+                    border-radius: 4px;
+                    background-color: #263241;
                 }
                 QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                    background-color: #d5dbdb;
+                    background-color: #303D4E;
                 }
             """)
             
@@ -164,7 +166,7 @@ class GoalsTab(QWidget):
         weekly_layout.setContentsMargins(15, 20, 15, 15)  # Increase padding
         
         self.weekly_label = QLabel(T.get("days_per_week") + ":")
-        self.weekly_label.setStyleSheet("font-size: 18pt; font-weight: bold;")
+        self.weekly_label.setStyleSheet("color: #C8D3DE; font-size: 15pt; font-weight: bold;")
         
         self.weekly_spinbox = QSpinBox()
         self.weekly_spinbox.setRange(1, 7)
@@ -174,23 +176,25 @@ class GoalsTab(QWidget):
         self.weekly_spinbox.valueChanged.connect(self.weekly_goal_updated.emit)
         self.weekly_spinbox.setStyleSheet("""
             QSpinBox {
-                border: 2px solid #bdc3c7;
-                border-radius: 10px;
+                border: 1px solid #2A3644;
+                border-radius: 8px;
                 padding: 5px;
-                font-size: 16pt;
+                color: #E8EEF5;
+                background-color: #101720;
+                font-size: 15pt;
                 font-weight: bold;
             }
             QSpinBox:hover {
-                border-color: #3498db;
+                border-color: #4CE0B3;
             }
             QSpinBox::up-button, QSpinBox::down-button {
                 width: 25px;
                 height: 18px;
-                border-radius: 5px;
-                background-color: #ecf0f1;
+                border-radius: 4px;
+                background-color: #263241;
             }
             QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                background-color: #d5dbdb;
+                background-color: #303D4E;
             }
         """)
         

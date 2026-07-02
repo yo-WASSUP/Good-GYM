@@ -64,7 +64,8 @@ class ExerciseCounter:
                             'down_angle': config.get('down_angle'),
                             'up_angle': config.get('up_angle'),
                             'keypoints': config.get('keypoints', {}),
-                            'is_leg_exercise': config.get('is_leg_exercise', False)
+                            'is_leg_exercise': config.get('is_leg_exercise', False),
+                            'angle_direction': config.get('angle_direction')
                         }
                     
                     print(f"Loaded {len(configs)} exercises from {exercises_file}")
@@ -144,6 +145,13 @@ class ExerciseCounter:
             return False
         return True
     
+    def get_angle_direction(self, config):
+        """Infer movement direction when old exercise configs do not specify it."""
+        direction = config.get('angle_direction')
+        if direction in ('increasing', 'decreasing'):
+            return direction
+        return 'decreasing' if config['up_angle'] < config['down_angle'] else 'increasing'
+    
     def count_exercise(self, keypoints, exercise_type):
         """Generic exercise counting function"""
         try:
@@ -184,17 +192,29 @@ class ExerciseCounter:
             # Get thresholds
             up_threshold = config['up_angle']
             down_threshold = config['down_angle']
+            direction = self.get_angle_direction(config)
             
             # Counting logic with timing check
-            if smoothed_angle > up_threshold:
-                self.stage = "up"
-            elif (smoothed_angle < down_threshold and 
-                  self.stage == "up" and 
-                  self.check_rep_timing()):
-                
-                self.stage = "down"
-                self.counter += 1
-                self.last_count_time = time.time()
+            if direction == 'decreasing':
+                if smoothed_angle > down_threshold:
+                    self.stage = "down"
+                elif (smoothed_angle < up_threshold and 
+                      self.stage == "down" and 
+                      self.check_rep_timing()):
+                    
+                    self.stage = "up"
+                    self.counter += 1
+                    self.last_count_time = time.time()
+            else:
+                if smoothed_angle > up_threshold:
+                    self.stage = "up"
+                elif (smoothed_angle < down_threshold and 
+                      self.stage == "up" and 
+                      self.check_rep_timing()):
+                    
+                    self.stage = "down"
+                    self.counter += 1
+                    self.last_count_time = time.time()
                 
             return smoothed_angle
             
@@ -206,26 +226,39 @@ class ExerciseCounter:
         """Count leg exercises with complete up-down cycles"""
         up_threshold = config['up_angle']
         down_threshold = config['down_angle']
+        direction = self.get_angle_direction(config)
         
         # Check if either leg meets the criteria
         if self.check_rep_timing():
             # Left leg
-            if left_angle > up_threshold:
-                self.leg_stages['left'] = "up"
-            elif (left_angle < down_threshold and 
-                  self.leg_stages['left'] == "up"):
+            if direction == 'decreasing':
+                left_ready = left_angle > down_threshold
+                left_counted = left_angle < up_threshold and self.leg_stages['left'] == "down"
+            else:
+                left_ready = left_angle > up_threshold
+                left_counted = left_angle < down_threshold and self.leg_stages['left'] == "up"
+            
+            if left_ready:
+                self.leg_stages['left'] = "down" if direction == 'decreasing' else "up"
+            elif left_counted:
                 self.counter += 1
                 self.last_count_time = time.time()
-                self.leg_stages['left'] = "down"
+                self.leg_stages['left'] = "up" if direction == 'decreasing' else "down"
             
             # Right leg
-            if right_angle > up_threshold:
-                self.leg_stages['right'] = "up"
-            elif (right_angle < down_threshold and 
-                  self.leg_stages['right'] == "up"):
+            if direction == 'decreasing':
+                right_ready = right_angle > down_threshold
+                right_counted = right_angle < up_threshold and self.leg_stages['right'] == "down"
+            else:
+                right_ready = right_angle > up_threshold
+                right_counted = right_angle < down_threshold and self.leg_stages['right'] == "up"
+            
+            if right_ready:
+                self.leg_stages['right'] = "down" if direction == 'decreasing' else "up"
+            elif right_counted:
                 self.counter += 1
                 self.last_count_time = time.time()
-                self.leg_stages['right'] = "down"
+                self.leg_stages['right'] = "up" if direction == 'decreasing' else "down"
         
         # Return average angle for display purposes
         return (left_angle + right_angle) / 2

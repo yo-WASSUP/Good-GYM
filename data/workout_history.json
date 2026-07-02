@@ -358,7 +358,10 @@
       "leg_raise": 102,
       "knee_raise": 102,
       "knee_press": 102
+    },
+    "2026-06-27": {
+      "overhead_press": 4
     }
   },
-  "last_updated": "2026-03-04 16:36:31"
+  "last_updated": "2026-06-27 23:07:54"
 }

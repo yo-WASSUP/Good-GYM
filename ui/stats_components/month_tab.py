@@ -55,12 +55,13 @@ class MonthStatsTab(QWidget):
             QPushButton { 
                 font-size: 16px; 
                 padding: 5px 10px; 
-                background-color: #ecf0f1; 
-                border: 1px solid #bdc3c7; 
-                border-radius: 4px; 
+                background-color: #263241; 
+                color: #E8EEF5;
+                border: 1px solid #354354; 
+                border-radius: 8px; 
             }
-            QPushButton:hover { background-color: #d6dbdf; }
-            QPushButton:pressed { background-color: #bdc3c7; }
+            QPushButton:hover { background-color: #303D4E; }
+            QPushButton:pressed { background-color: #1D2631; }
         """)
         self.prev_month_btn.setFixedWidth(40)
         self.prev_month_btn.clicked.connect(self.go_to_previous_month)
@@ -69,7 +70,7 @@ class MonthStatsTab(QWidget):
         # Current month label
         self.month_label = QLabel(self.get_month_display_text())
         self.month_label.setAlignment(Qt.AlignCenter)
-        self.month_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #2980b9;")
+        self.month_label.setStyleSheet("font-size: 16px; font-weight: bold; color: #E8EEF5;")
         month_nav_layout.addWidget(self.month_label, 1)
         
         # Next month button
@@ -78,12 +79,13 @@ class MonthStatsTab(QWidget):
             QPushButton { 
                 font-size: 16px; 
                 padding: 5px 10px; 
-                background-color: #ecf0f1; 
-                border: 1px solid #bdc3c7; 
-                border-radius: 4px; 
+                background-color: #263241; 
+                color: #E8EEF5;
+                border: 1px solid #354354; 
+                border-radius: 8px; 
             }
-            QPushButton:hover { background-color: #d6dbdf; }
-            QPushButton:pressed { background-color: #bdc3c7; }
+            QPushButton:hover { background-color: #303D4E; }
+            QPushButton:pressed { background-color: #1D2631; }
         """)
         self.next_month_btn.setFixedWidth(40)
         self.next_month_btn.clicked.connect(self.go_to_next_month)
@@ -98,19 +100,19 @@ class MonthStatsTab(QWidget):
         
         # Add labels
         self.day_label = QLabel(T.get("monthly_stats") + ":")
-        self.day_label.setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;")
+        self.day_label.setStyleSheet("color: #C8D3DE; font-family: 'Segoe UI', 'Microsoft YaHei UI'; font-size: 16px; font-weight: bold;")
         summary_layout.addWidget(self.day_label, 0, 0)
         
         self.month_days_label = QLabel("0 / 0")
-        self.month_days_label.setStyleSheet("color: #27ae60; font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;")  # Use red font
+        self.month_days_label.setStyleSheet("color: #4CE0B3; font-family: 'Segoe UI', 'Microsoft YaHei UI'; font-size: 16px; font-weight: bold;")  # Use red font
         summary_layout.addWidget(self.month_days_label, 0, 1)
         
         # Add calendar indicator
         self.month_calendar_indicator = MonthCalendarIndicator(
             days_in_month=self._get_days_in_month(),
-            active_color="#27ae60",     # Completed dates use green
-            inactive_color="#bdc3c7",  # Unstarted dates use gray
-            partial_color="#a5ebc8"     # Partially completed dates use light green
+            active_color="#4CE0B3",     # Completed dates use green
+            inactive_color="#263241",  # Unstarted dates use gray
+            partial_color="#244C45"     # Partially completed dates use dark green
         )
         
         # Calculate which weekday the first day of current month is

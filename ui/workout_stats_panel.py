@@ -104,11 +104,13 @@ class WorkoutStatsPanel(QWidget):
     def setup_ui(self):
         """Setup UI components"""
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(18, 18, 18, 18)
+        self.layout.setSpacing(14)
         
         # Create top title
         self.title_label = QLabel(T.get("fitness_statistics"))
-        self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setStyleSheet("color: #2c3e50; font-size: 20pt; font-weight: bold; margin: 15px 0; padding: 10px;")
+        self.title_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.title_label.setStyleSheet(AppStyles.get_panel_title_style())
         self.layout.addWidget(self.title_label)
         
         # Create tabs
@@ -117,31 +119,33 @@ class WorkoutStatsPanel(QWidget):
         self.tabs.setTabShape(QTabWidget.Rounded)
         self.tabs.setStyleSheet("""
             QTabWidget::pane { 
-                border: 1px solid #bdc3c7;
-                border-radius: 5px;
-                padding: 15px; 
-                background-color: #f8f9fa;
+                border: 1px solid #263241;
+                border-radius: 8px;
+                padding: 14px; 
+                background-color: #141A22;
             }
             QTabBar::tab {
-                background-color: #ecf0f1; 
-                border: 1px solid #bdc3c7;
+                background-color: #111820; 
+                color: #9AA8B6;
+                border: 1px solid #263241;
                 border-bottom: none;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-                padding: 10px 20px;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                padding: 10px 18px;
                 margin-right: 3px;
-                font-family: 'Microsoft YaHei';
+                font-family: 'Segoe UI', 'Microsoft YaHei UI';
                 font-size: 16px;
                 font-weight: bold;
                 min-width: 150px;
             }
             QTabBar::tab:selected {
-                background-color: #f8f9fa;
-                border-bottom: 2px solid #3498db;
-                color: #2980b9;
+                background-color: #141A22;
+                border-bottom: 2px solid #4CE0B3;
+                color: #E8EEF5;
             }
             QTabBar::tab:hover:!selected {
-                background-color: #e0e0e0;
+                background-color: #18222D;
+                color: #C8D3DE;
             }
         """)
         

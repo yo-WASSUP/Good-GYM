@@ -7,8 +7,14 @@ class VideoDisplay(QWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        # Set background to black for better viewing
-        self.setStyleSheet("background-color: black;")
+        self.setObjectName("VideoDisplay")
+        self.setStyleSheet("""
+            QWidget#VideoDisplay {
+                background-color: #070A0E;
+                border: 1px solid #1E2933;
+                border-radius: 8px;
+            }
+        """)
         
         # Layout setup - use center alignment
         self.layout = QVBoxLayout(self)
@@ -19,17 +25,19 @@ class VideoDisplay(QWidget):
         # Create image label for video display
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setStyleSheet("border: none;")
+        self.image_label.setStyleSheet("border: none; background-color: #05070A; border-radius: 7px;")
         self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         # Auto-expand to fit container
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMinimumSize(260, 260)
 
         self.layout.addWidget(self.image_label, 0, Qt.AlignCenter)
         
         # Default settings
         self.is_portrait = True
-        self.aspect_ratio = 9/16  # Default portrait ratio
+        self.aspect_ratio = 9/16  # Default portrait view for a rotated wide camera
+        self._last_frame_aspect_ratio = None
         self.set_orientation(self.is_portrait)
     
     def update_image(self, frame):
@@ -42,11 +50,30 @@ class VideoDisplay(QWidget):
             
             # Detect frame aspect ratio and update settings
             frame_aspect_ratio = w / h
-            self.update_aspect_ratio(frame_aspect_ratio)
+            if (
+                self._last_frame_aspect_ratio is None
+                or abs(frame_aspect_ratio - self._last_frame_aspect_ratio) > 0.01
+            ):
+                self._last_frame_aspect_ratio = frame_aspect_ratio
+                self.update_aspect_ratio(frame_aspect_ratio)
+                self.adjust_size()
             
             # Calculate display area size
             label_width = self.width()
             label_height = self.height()
+            transform_mode = Qt.FastTransformation
+
+            if label_width > 0 and label_height > 0:
+                qt_img = convert_to_qt_format.scaled(
+                    label_width,
+                    label_height,
+                    Qt.KeepAspectRatio,
+                    transform_mode
+                )
+                pixmap = QPixmap.fromImage(qt_img)
+                self.image_label.setPixmap(pixmap)
+                self.image_label.setScaledContents(False)
+                return
             
             if label_width > 0 and label_height > 0:
                 # 使用高质量缩放，保持长宽比
@@ -120,18 +147,18 @@ class VideoDisplay(QWidget):
         """Set video display orientation
         
         Args:
-            portrait_mode (bool): True for portrait mode (9:16), False for landscape mode (16:9)
+            portrait_mode (bool): True for rotated camera view, False for landscape camera view
         """
         self.is_portrait = portrait_mode
         
         if portrait_mode:
-            # Portrait mode - 9:16 ratio
+            # Portrait mode - rotated wide camera ratio until the real frame arrives
             self.aspect_ratio = 9/16
-            self.image_label.setMinimumSize(360, 640)
+            self.image_label.setMinimumSize(160, 260)
         else:
-            # Landscape mode - 16:9 ratio
+            # Landscape mode - native wide camera ratio until the real frame arrives
             self.aspect_ratio = 16/9
-            self.image_label.setMinimumSize(640, 360)
+            self.image_label.setMinimumSize(260, 160)
         
         # Adjust size to fit new aspect ratio
         self.adjust_size()

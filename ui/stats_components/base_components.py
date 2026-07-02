@@ -31,11 +31,13 @@ class StyledProgressBar(QProgressBar):
         self.setFormat("%v / 0")  # Don't know target value during initial loading
         self.setStyleSheet(f"""
             QProgressBar {{
-                border: 1px solid #bdc3c7;
-                border-radius: 10px;
+                border: 1px solid #2A3644;
+                border-radius: 8px;
+                background-color: #101720;
+                color: #C8D3DE;
                 text-align: center;
                 height: 25px;
-                font-family: 'Microsoft YaHei';
+                font-family: 'Segoe UI', 'Microsoft YaHei UI';
                 font-size: 14px;
                 font-weight: bold;
                 margin-top: 5px;
@@ -44,7 +46,7 @@ class StyledProgressBar(QProgressBar):
             }}
             QProgressBar::chunk {{
                 background-color: {color};
-                border-radius: 8px;
+                border-radius: 7px;
             }}
         """)
 
@@ -52,8 +54,8 @@ class StyledProgressBar(QProgressBar):
 class DayCircleIndicator(QWidget):
     """Custom component with seven circles representing weekly fitness progress"""
     
-    def __init__(self, parent=None, days=7, active_color="#3498db", inactive_color="#ecf0f1", 
-                 partial_color="#a6dcff"):
+    def __init__(self, parent=None, days=7, active_color="#4CE0B3", inactive_color="#263241", 
+                 partial_color="#244C45"):
         super().__init__(parent)
         self.days = days  # Total days
         
@@ -164,7 +166,7 @@ class DayCircleIndicator(QWidget):
                 
             # Add weekday text below circle
             text_rect = QRectF(x, y_center + circle_diameter/2 + 2, circle_diameter, 15)
-            painter.setPen(QPen(QColor("#34495e")))
+            painter.setPen(QPen(QColor("#9AA8B6")))
             painter.drawText(text_rect, Qt.AlignCenter, self.day_labels[i])
                 
         painter.end()
@@ -173,8 +175,8 @@ class MonthCalendarIndicator(QWidget):
     """Calendar-style component displaying monthly fitness progress"""
     
     def __init__(self, parent=None, days_in_month=31, columns=7, 
-                 active_color="#27ae60", inactive_color="#ecf0f1", 
-                 partial_color="#a5ebc8"):
+                 active_color="#4CE0B3", inactive_color="#263241", 
+                 partial_color="#244C45"):
         super().__init__(parent)
         self.days_in_month = days_in_month  # Days in month
         self.columns = columns  # Calendar columns (usually 7, corresponding to Monday to Sunday)
@@ -261,7 +263,7 @@ class MonthCalendarIndicator(QWidget):
         
         # Draw weekday labels
         painter.setFont(header_font)
-        painter.setPen(QPen(QColor("#34495e")))
+        painter.setPen(QPen(QColor("#9AA8B6")))
         
         for i in range(self.columns):
             x = i * cell_width + cell_width / 2
@@ -295,8 +297,7 @@ class MonthCalendarIndicator(QWidget):
                 painter.setBrush(QBrush(QColor(self.active_color)))
                 painter.drawRoundedRect(circle_rect, 8, 8)  # Rounded rectangle
                 
-                # Draw date text (white)
-                painter.setPen(QPen(QColor("white")))
+                painter.setPen(QPen(QColor("#07110F")))
             elif self.day_status[day] == 1:  # Partially completed
                 # Draw outer border
                 painter.setPen(QPen(QColor(self.active_color), 1))
@@ -310,7 +311,7 @@ class MonthCalendarIndicator(QWidget):
                 painter.drawRoundedRect(half_rect, 0, 0)  # Half-fill rectangle
                 
                 # Draw date text (dark)
-                painter.setPen(QPen(QColor("#333333")))
+                painter.setPen(QPen(QColor("#C8D3DE")))
             else:  # Not started
                 # Set light circle
                 painter.setPen(QPen(QColor(self.inactive_color), 1))
@@ -318,7 +319,7 @@ class MonthCalendarIndicator(QWidget):
                 painter.drawRoundedRect(circle_rect, 8, 8)  # Rounded rectangle
                 
                 # Draw date text (dark)
-                painter.setPen(QPen(QColor("#333333")))
+                painter.setPen(QPen(QColor("#8FA0B2")))
             
             # Draw date text
             painter.drawText(text_rect, Qt.AlignCenter, str(day))
@@ -345,20 +346,29 @@ class StyledStatsTable(QTableWidget):
         # Set style
         self.setStyleSheet("""
             QTableWidget {
-                border: 1px solid #bdc3c7;
-                border-radius: 5px;
-                background-color: white;
-                font-family: 'Microsoft YaHei';
+                border: 1px solid #263241;
+                border-radius: 8px;
+                background-color: #101720;
+                alternate-background-color: #141C25;
+                color: #E8EEF5;
+                gridline-color: #263241;
+                font-family: 'Segoe UI', 'Microsoft YaHei UI';
                 font-size: 14px;
+                selection-background-color: #1F6F61;
+                selection-color: #FFFFFF;
             }
             QTableWidget::item {
                 padding: 8px;
                 min-height: 35px;
+                border: none;
             }
             QHeaderView::section {
-                background-color: #ecf0f1;
+                background-color: #18222D;
+                color: #B8C3CF;
                 padding: 10px;
-                border: 1px solid #bdc3c7;
+                border: none;
+                border-right: 1px solid #263241;
+                border-bottom: 1px solid #263241;
                 font-weight: bold;
                 font-size: 16px;
                 min-height: 30px;

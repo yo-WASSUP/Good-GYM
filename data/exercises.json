@@ -77,6 +77,7 @@
       "name_en": "Bicep Curl",
       "down_angle": 160,
       "up_angle": 60,
+      "angle_direction": "decreasing",
       "keypoints": {
         "left": [
           5,
@@ -221,6 +222,7 @@
       "name_en": "Crunch",
       "down_angle": 170,
       "up_angle": 150,
+      "angle_direction": "decreasing",
       "keypoints": {
         "left": [
           5,
@@ -245,6 +247,7 @@
       "name_en": "Pull-up",
       "down_angle": 140,
       "up_angle": 70,
+      "angle_direction": "decreasing",
       "keypoints": {
         "left": [
           5,

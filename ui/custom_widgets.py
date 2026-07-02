@@ -9,16 +9,17 @@ class ToggleSwitch(QPushButton):
         super().__init__(parent)
         self.setCheckable(True)
         self.setChecked(True)  # Default on state
-        self.setMinimumWidth(80)
-        self.setMaximumWidth(80)
-        self.setMinimumHeight(30)
-        self.setMaximumHeight(30)
+        self.setMinimumWidth(50)
+        self.setMaximumWidth(50)
+        self.setMinimumHeight(24)
+        self.setMaximumHeight(24)
         
         # Set colors
-        self.on_color = QColor("#2ecc71")  # Green
-        self.off_color = QColor("#bdc3c7")  # Gray
+        self.on_color = QColor("#38D6B2")
+        self.off_color = QColor("#1B2530")
+        self.disabled_color = QColor("#171D24")
         self.thumb_color = QColor("#ffffff")  # White
-        self.text_color = QColor("#ffffff")  # White
+        self.text_color = QColor("#07110F")
         
         # Connect state change signal to update text method
         self.toggled.connect(self.update_text)
@@ -26,7 +27,7 @@ class ToggleSwitch(QPushButton):
     
     def update_text(self, checked):
         """Update button text based on state"""
-        self.setText("开" if checked else "关")
+        self.setText("")
         self.update()  # Force redraw
     
     def paintEvent(self, event):
@@ -39,23 +40,27 @@ class ToggleSwitch(QPushButton):
         painter.setFont(font)
         
         # Determine background color
-        bg_color = self.on_color if self.isChecked() else self.off_color
+        if not self.isEnabled():
+            bg_color = self.disabled_color
+        else:
+            bg_color = self.on_color if self.isChecked() else self.off_color
         
         # Draw background
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(bg_color))
-        painter.drawRoundedRect(0, 0, self.width(), self.height(), 15, 15)
+        painter.drawRoundedRect(0, 0, self.width(), self.height(), 13, 13)
         
         # Draw thumb
-        thumb_radius = self.height() - 6
+        thumb_radius = self.height() - 8
         thumb_x = self.width() - thumb_radius - 3 if self.isChecked() else 3
-        painter.setBrush(QBrush(self.thumb_color))
-        painter.drawEllipse(thumb_x, 3, thumb_radius, thumb_radius)
+        painter.setBrush(QBrush(QColor("#6B7784") if not self.isEnabled() else self.thumb_color))
+        painter.drawEllipse(thumb_x, 4, thumb_radius, thumb_radius)
         
         # Draw text
         painter.setPen(QPen(self.text_color))
-        text_x = 5 if self.isChecked() else self.width() - 30
-        painter.drawText(text_x, 0, 30, self.height(), Qt.AlignCenter, self.text())
+        if self.text():
+            text_x = 5 if self.isChecked() else self.width() - 30
+            painter.drawText(text_x, 0, 30, self.height(), Qt.AlignCenter, self.text())
         
 class SwitchControl(QWidget):
     """Sliding switch control with label"""
@@ -66,6 +71,7 @@ class SwitchControl(QWidget):
         super().__init__(parent)
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(12)
         
         # Create sliding switch
         self.toggle = ToggleSwitch()
@@ -74,7 +80,7 @@ class SwitchControl(QWidget):
         # Set label
         from PyQt5.QtWidgets import QLabel
         self.label = QLabel(label_text)
-        self.label.setStyleSheet("color: #2c3e50; font-size: 14pt;")
+        self.label.setStyleSheet("color: #D4DCE4; font-size: 10pt; font-weight: 700;")
         
         # Add to layout
         self.layout.addWidget(self.label)

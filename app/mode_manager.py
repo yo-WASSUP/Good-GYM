@@ -11,8 +11,47 @@ class ModeManager:
     
     def __init__(self, main_window):
         self.main_window = main_window
-    
+
     def switch_to_workout_mode(self):
+        """Switch to the camera training workspace."""
+        if self.main_window.video_thread.isRunning():
+            self.main_window.video_thread.stop()
+            self.main_window.video_thread.wait()
+
+        self.main_window.setup_video_thread()
+        self.main_window.video_display.setVisible(True)
+        if hasattr(self.main_window, "control_scroll"):
+            self.main_window.control_scroll.setVisible(True)
+        if hasattr(self.main_window, "control_panel"):
+            self.main_window.control_panel.setVisible(True)
+        if hasattr(self.main_window, "status_rail"):
+            self.main_window.status_rail.setVisible(True)
+        self.main_window.workout_view.setVisible(True)
+        self.main_window.content_stack.setCurrentWidget(self.main_window.workout_view)
+
+        self.main_window.toggle_skeleton_action.setEnabled(True)
+        self.main_window.toggle_rotation_action.setEnabled(True)
+
+        QTimer.singleShot(500, self.main_window.start_video)
+        self.main_window.statusBar.showMessage(T.get("switched_to_workout"))
+
+    def switch_to_stats_mode(self):
+        """Switch to the statistics workspace."""
+        self.main_window.video_thread.stop()
+
+        if hasattr(self.main_window, "stats_panel"):
+            self.main_window.content_stack.setCurrentWidget(self.main_window.stats_panel)
+            self.main_window.stats_panel.setVisible(True)
+
+        self.main_window.toggle_skeleton_action.setEnabled(False)
+        self.main_window.toggle_rotation_action.setEnabled(False)
+
+        self.main_window.update_today_stats()
+        self.main_window.update_stats_overview()
+        self.main_window.stats_panel.tabs.setCurrentIndex(0)
+        self.main_window.statusBar.showMessage(T.get("switched_to_stats"))
+    
+    def _switch_to_workout_mode_legacy(self):
         """切换到运动模式（显示摄像头和控制面板）"""
         
         # 隐藏统计面板
@@ -66,7 +105,7 @@ class ModeManager:
         # 更新状态栏
         self.main_window.statusBar.showMessage(T.get("switched_to_workout"))
     
-    def switch_to_stats_mode(self):
+    def _switch_to_stats_mode_legacy(self):
         """切换到统计管理模式（全屏显示统计面板）"""
         
         # 隐藏视频显示区域和控制面板

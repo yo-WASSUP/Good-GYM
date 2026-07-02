@@ -26,6 +26,9 @@ class CounterManager:
         self.main_window.exercise_counter.reset_counter()
         self.main_window.current_count = 0
         self.main_window.manual_count = 0  # 同时重置手动计数
+        if hasattr(self.main_window, "status_rail"):
+            self.main_window.status_rail.update_counter(0)
+            self.main_window.status_rail.update_phase(None)
         self.main_window.control_panel.update_counter(0)
         
         # 重置完成后恢复标志
@@ -45,6 +48,9 @@ class CounterManager:
         self.main_window.exercise_counter.counter = new_count
         # 增加手动计数
         self.main_window.manual_count += 1
+        if hasattr(self.main_window, "status_rail"):
+            self.main_window.status_rail.update_counter(new_count)
+        self.main_window.control_panel.update_counter(new_count)
         self.main_window.statusBar.showMessage(f"Count increased to {new_count}")
     
     def decrease_counter(self, new_count):
@@ -55,6 +61,9 @@ class CounterManager:
         # 手动计数不会为负数
         if self.main_window.manual_count > 0:
             self.main_window.manual_count -= 1
+        if hasattr(self.main_window, "status_rail"):
+            self.main_window.status_rail.update_counter(new_count)
+        self.main_window.control_panel.update_counter(new_count)
         self.main_window.statusBar.showMessage(f"Count decreased to {new_count}")
     
     def confirm_record(self, exercise_type):

@@ -34,21 +34,21 @@ class WeekStatsTab(QWidget):
         
         # Add labels
         self.day_label = QLabel(T.get("days_per_week") + ":")
-        self.day_label.setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;")
+        self.day_label.setStyleSheet("color: #C8D3DE; font-family: 'Segoe UI', 'Microsoft YaHei UI'; font-size: 16px; font-weight: bold;")
         summary_layout.addWidget(self.day_label, 0, 0)
         self.week_days_label = QLabel("0 / 7")
-        self.week_days_label.setStyleSheet("color: #27ae60; font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;")  # Use green font
+        self.week_days_label.setStyleSheet("color: #4CE0B3; font-family: 'Segoe UI', 'Microsoft YaHei UI'; font-size: 16px; font-weight: bold;")  # Use green font
         summary_layout.addWidget(self.week_days_label, 0, 1)
         
         self.progress_label = QLabel(T.get("weekly_progress") + ":")
-        self.progress_label.setStyleSheet("font-family: 'Microsoft YaHei'; font-size: 16px; font-weight: bold;")
+        self.progress_label.setStyleSheet("color: #C8D3DE; font-family: 'Segoe UI', 'Microsoft YaHei UI'; font-size: 16px; font-weight: bold;")
         summary_layout.addWidget(self.progress_label, 1, 0)
         
         # Add 7 circle progress indicators
         self.week_circle_indicator = DayCircleIndicator(
-            active_color="#27ae60",    # Completed circles use green
-            inactive_color="#bdc3c7", # Unstarted circles use gray
-            partial_color="#a5ebc8"    # Partially completed circles use light green
+            active_color="#4CE0B3",    # Completed circles use green
+            inactive_color="#263241", # Unstarted circles use gray
+            partial_color="#244C45"    # Partially completed circles use dark green
         )
         summary_layout.addWidget(self.week_circle_indicator, 1, 1)
         

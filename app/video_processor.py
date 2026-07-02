@@ -4,6 +4,7 @@
 
 import cv2
 import os
+import time
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QTimer
 from core.translations import Translations as T
@@ -13,27 +14,82 @@ class VideoProcessor:
     
     def __init__(self, main_window):
         self.main_window = main_window
-    
-    def update_image(self, frame, fps=0):
-        """更新图像显示并处理姿态检测"""
-        try:
-            # 更新FPS值
-            self.main_window.current_fps = fps
-            
-            # 使用推理帧进行姿态检测（如果可用）
-            inference_frame = getattr(self.main_window, 'current_inference_frame', frame)
-            
-            # 姿态处理器处理推理帧，获取关键点信息和角度点
+        self.pose_interval_seconds = 1 / 20
+        self.metric_interval_seconds = 0.25
+        self._last_pose_time = 0
+        self._last_metric_time = 0
+        self._cached_pose = None
+
+    def reset_pose_cache(self):
+        self._last_pose_time = 0
+        self._last_metric_time = 0
+        self._cached_pose = None
+
+    def _get_pose_result(self, inference_frame):
+        frame_shape = inference_frame.shape[:2]
+        now = time.perf_counter()
+        should_infer = (
+            self._cached_pose is None
+            or self._cached_pose["shape"] != frame_shape
+            or now - self._last_pose_time >= self.pose_interval_seconds
+        )
+
+        did_infer = False
+        if should_infer:
+            inference_start = time.perf_counter()
             _, current_angle, angle_point, keypoints = self.main_window.pose_processor.process_frame(
                 inference_frame, self.main_window.exercise_type
             )
+            inference_ms = (time.perf_counter() - inference_start) * 1000
+            if hasattr(self.main_window, "status_rail"):
+                self.main_window.status_rail.update_inference(inference_ms)
+
+            self._cached_pose = {
+                "current_angle": current_angle,
+                "angle_point": angle_point,
+                "keypoints": keypoints,
+                "shape": frame_shape,
+            }
+            self._last_pose_time = now
+            did_infer = True
+
+        return self._cached_pose, did_infer
+    
+    def update_image(self, frame, inference_frame=None, fps=0):
+        """更新图像显示并处理姿态检测"""
+        try:
+            if inference_frame is not None and not hasattr(inference_frame, "shape"):
+                fps = inference_frame
+                inference_frame = None
+
+            if getattr(self.main_window, "suspend_video_processing", False):
+                return
+
+            # 更新FPS值
+            now = time.perf_counter()
+            self.main_window.current_fps = fps
+            should_update_metrics = now - self._last_metric_time >= self.metric_interval_seconds
+            if should_update_metrics and hasattr(self.main_window, "status_rail"):
+                self.main_window.status_rail.update_fps(fps)
+                self._last_metric_time = now
+            
+            # 使用推理帧进行姿态检测（如果可用）
+            if inference_frame is None:
+                inference_frame = frame
+            
+            # 姿态处理器处理推理帧，获取关键点信息和角度点
+            pose_result, pose_updated = self._get_pose_result(inference_frame)
+            current_angle = pose_result["current_angle"]
+            angle_point = pose_result["angle_point"]
+            keypoints = pose_result["keypoints"]
+            pose_height, pose_width = pose_result["shape"]
             
             # 准备高分辨率显示帧
             display_frame = frame.copy()
             
             # 计算缩放比例（推理帧到显示帧）
-            scale_x = display_frame.shape[1] / inference_frame.shape[1]
-            scale_y = display_frame.shape[0] / inference_frame.shape[0]
+            scale_x = display_frame.shape[1] / pose_width
+            scale_y = display_frame.shape[0] / pose_height
             
             # 如果有关键点信息，在高分辨率帧上绘制骨架
             if keypoints is not None and self.main_window.pose_processor.show_skeleton:
@@ -57,7 +113,7 @@ class VideoProcessor:
                 scaled_angle_point = None
             
             # 如果启用镜像模式，先应用镜像处理
-            if self.main_window.mirror_mode:
+            if self.main_window.mirror_mode and not getattr(self.main_window.video_thread, 'mirror', False):
                 display_frame = cv2.flip(display_frame, 1)
                 # 镜像后需要调整角度点坐标（因为显示帧被镜像了）
                 if scaled_angle_point is not None:
@@ -80,7 +136,8 @@ class VideoProcessor:
             self.main_window.video_display.update_image(display_frame)
             
             # 更新UI组件
-            self.update_ui_components(current_angle, keypoints)
+            if pose_updated:
+                self.update_ui_components(current_angle, keypoints)
             
         except Exception as e:
             print(f"Error updating image: {e}")
@@ -233,7 +290,10 @@ class VideoProcessor:
             
             # 更新阶段显示（上/下）
             if hasattr(self.main_window.exercise_counter, 'stage'):
-                self.main_window.control_panel.update_phase(self.main_window.exercise_counter.stage)
+                stage = self.main_window.exercise_counter.stage
+                if hasattr(self.main_window, "status_rail"):
+                    self.main_window.status_rail.update_phase(stage)
+                self.main_window.control_panel.update_phase(stage)
             
             # 获取当前计数 - 直接使用计数器属性
             current_count = self.main_window.exercise_counter.counter
@@ -252,18 +312,33 @@ class VideoProcessor:
                 self.main_window.current_count = current_count
             
             # 更新计数器显示
+            if hasattr(self.main_window, "status_rail"):
+                self.main_window.status_rail.update_counter(str(current_count))
             self.main_window.control_panel.update_counter(str(current_count))
         except Exception as e:
             print(f"Error updating image: {str(e)}")
     
     def change_camera(self, index):
         """切换摄像头"""
+        self.main_window.suspend_video_processing = True
+        self.reset_pose_cache()
+        self.main_window.statusBar.showMessage(f"Switching to camera {index}...")
+        self.main_window.current_camera_id = index
+        self.main_window.is_camera_source = True
+        self.main_window.current_video_file = None
         self.main_window.video_thread.set_camera(index)
+        self.main_window.video_thread.set_rotation(self.main_window.rotation_mode)
+        self.main_window.video_thread.set_mirror(self.main_window.mirror_mode)
+        if hasattr(self.main_window, "status_rail"):
+            self.main_window.status_rail.update_camera(index)
+        QTimer.singleShot(250, lambda: setattr(self.main_window, "suspend_video_processing", False))
         self.main_window.statusBar.showMessage(f"Switched to camera {index}")
     
     def toggle_rotation(self, rotate):
         """切换视频旋转模式"""
         # 更新视频线程旋转设置
+        self.reset_pose_cache()
+        self.main_window.rotation_mode = rotate
         self.main_window.video_thread.set_rotation(rotate)
         
         # 更新视频显示方向设置
@@ -272,14 +347,16 @@ class VideoProcessor:
         
         if rotate:
             self.main_window.toggle_rotation_action.setText("Turn off rotation mode")
-            self.main_window.statusBar.showMessage("Switched to portrait mode (9:16)")
+            self.main_window.statusBar.showMessage("Switched to portrait mode (full camera frame)")
         else:
             self.main_window.toggle_rotation_action.setText("Turn on rotation mode")
-            self.main_window.statusBar.showMessage("Switched to landscape mode (16:9)")
+            self.main_window.statusBar.showMessage("Switched to landscape mode (full camera frame)")
     
     def toggle_skeleton(self, show):
         """切换骨架显示"""
         self.main_window.pose_processor.set_skeleton_visibility(show)
+        if hasattr(self.main_window, 'toggle_skeleton_action'):
+            self.main_window.toggle_skeleton_action.setChecked(show)
         if show:
             self.main_window.statusBar.showMessage("Show skeleton lines")
         else:
@@ -287,6 +364,7 @@ class VideoProcessor:
     
     def toggle_mirror(self, mirror):
         """切换镜像模式"""
+        self.reset_pose_cache()
         self.main_window.mirror_mode = mirror
         # 同步更新 video_thread 的镜像设置
         if hasattr(self.main_window, 'video_thread'):
@@ -310,6 +388,7 @@ class VideoProcessor:
         
         if file_name:
             try:
+                self.reset_pose_cache()
                 # 清除当前计数状态
                 self.main_window.reset_exercise_state()
                 
@@ -321,6 +400,8 @@ class VideoProcessor:
                 # 设置状态栏信息
                 video_name = os.path.basename(file_name)
                 self.main_window.statusBar.showMessage(f"Current video: {video_name}")
+                self.main_window.is_camera_source = False
+                self.main_window.current_video_file = file_name
                 
                 # 将文件路径传递给视频线程，设置为非循环播放模式
                 self.main_window.video_thread.set_video_file(file_name, loop=False)
@@ -340,10 +421,14 @@ class VideoProcessor:
                     self.main_window.switch_to_workout_mode()
                 
             # 设置状态栏信息
+            self.reset_pose_cache()
             self.main_window.statusBar.showMessage("Current mode: Camera")
             
             # 返回摄像头模式
-            self.main_window.video_thread.set_camera(0)  # 使用默认摄像头
+            camera_id = getattr(self.main_window, "current_camera_id", 0)
+            self.main_window.is_camera_source = True
+            self.main_window.current_video_file = None
+            self.main_window.video_thread.set_camera(camera_id)
         except Exception as e:
             print(f"Error switching to camera mode: {e}")
             self.main_window.statusBar.showMessage(f"Failed to switch to camera mode: {str(e)}")
@@ -355,6 +440,8 @@ class VideoProcessor:
                 return
 
             # 停止视频处理
+            self.main_window.suspend_video_processing = True
+            self.reset_pose_cache()
             self.main_window.video_thread.stop()
 
             self.main_window.statusBar.showMessage(f"Switching device to: {device}...")
@@ -373,6 +460,8 @@ class VideoProcessor:
 
             self.main_window.statusBar.showMessage(
                 f"RTMPose ({self.main_window.model_mode}) on {device}")
+            self.main_window.update_runtime_badge()
+            QTimer.singleShot(250, lambda: setattr(self.main_window, "suspend_video_processing", False))
 
         except Exception as e:
             error_msg = f"Device switching failed: {str(e)}"
@@ -385,6 +474,8 @@ class VideoProcessor:
                 self.main_window.setup_video_thread()
                 QTimer.singleShot(500, self.main_window.start_video)
                 self.main_window.statusBar.showMessage(f"Rolled back to {old_device}")
+                self.main_window.update_runtime_badge()
+                QTimer.singleShot(250, lambda: setattr(self.main_window, "suspend_video_processing", False))
             except:
                 self.main_window.statusBar.showMessage("Critical error in device switching")
 
@@ -396,6 +487,8 @@ class VideoProcessor:
                 return
 
             # 停止视频处理
+            self.main_window.suspend_video_processing = True
+            self.reset_pose_cache()
             self.main_window.video_thread.stop()
 
             # 显示状态信息
@@ -418,6 +511,8 @@ class VideoProcessor:
 
             # 更新状态栏
             self.main_window.statusBar.showMessage(f"Switched to RTMPose {model_mode} mode")
+            self.main_window.update_runtime_badge()
+            QTimer.singleShot(250, lambda: setattr(self.main_window, "suspend_video_processing", False))
 
         except Exception as e:
             # 如果切换失败，显示错误消息
@@ -432,6 +527,8 @@ class VideoProcessor:
                 self.main_window.setup_video_thread()
                 QTimer.singleShot(500, self.main_window.start_video)
                 self.main_window.statusBar.showMessage(f"Rolled back to RTMPose {old_model_mode} mode")
+                self.main_window.update_runtime_badge()
+                QTimer.singleShot(250, lambda: setattr(self.main_window, "suspend_video_processing", False))
 
             except:
                 # 如果回滚也失败，显示严重错误

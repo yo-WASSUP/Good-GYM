@@ -15,6 +15,30 @@ class Translations:
             "zh": "准备就绪",
             "en": "Ready",
         },
+        "app_subtitle": {
+            "zh": "AI 姿态健身计数器",
+            "en": "AI pose workout counter",
+        },
+        "camera_feed": {
+            "zh": "摄像头画面",
+            "en": "Camera feed",
+        },
+        "tracking_status": {
+            "zh": "RTMPose 跟踪中",
+            "en": "RTMPose tracking",
+        },
+        "live_session": {
+            "zh": "实时训练",
+            "en": "LIVE SESSION",
+        },
+        "camera_fps": {
+            "zh": "摄像头 FPS",
+            "en": "CAM FPS",
+        },
+        "ai_fps": {
+            "zh": "AI FPS",
+            "en": "AI FPS",
+        },
         
         # Menu items
         "tools_menu": {

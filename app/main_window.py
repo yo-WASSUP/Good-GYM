@@ -5,8 +5,10 @@
 import sys
 import os
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, 
-                             QStatusBar, QMessageBox, QAction, QActionGroup, QMenu, QFileDialog)
+                             QStatusBar, QMessageBox, QAction, QActionGroup, QMenu, QFileDialog,
+                             QLabel, QFrame, QScrollArea, QSplitter, QStackedLayout, QSizePolicy)
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QPixmap
 
 from core.video_thread import VideoThread
 from core.rtmpose_processor import RTMPoseProcessor
@@ -15,7 +17,7 @@ from core.workout_tracker import WorkoutTracker
 from core.translations import Translations as T
 from exercise_counters import ExerciseCounter
 from ui.video_display import VideoDisplay
-from ui.control_panel import ControlPanel
+from ui.control_panel import ControlPanel, WorkoutStatusRail
 from ui.workout_stats_panel import WorkoutStatsPanel
 from ui.styles import AppStyles
 
@@ -31,10 +33,12 @@ class WorkoutTrackerApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(T.get("app_title"))
-        self.setMinimumSize(900, 900)
+        self.setMinimumSize(980, 660)
+        self.resize(1260, 820)
         
         # 初始化核心组件
         self._init_core_components()
+        self._init_video_preferences()
         
         # 初始化管理器
         self._init_managers()
@@ -79,6 +83,14 @@ class WorkoutTrackerApp(QMainWindow):
         except Exception as e:
             print(f"Warning: Failed to register NVIDIA DLL dirs: {e}")
 
+    def _asset_path(self, filename):
+        """Return an asset path that works in development and PyInstaller builds."""
+        if getattr(sys, "frozen", False):
+            base_dir = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+        else:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(base_dir, "assets", filename)
+
     def _detect_device(self):
         """Detect available inference device by testing CUDA session creation"""
         self._register_nvidia_dll_dirs()
@@ -112,19 +124,23 @@ class WorkoutTrackerApp(QMainWindow):
                 os.close(old_stderr_fd)
                 os.close(devnull_fd)
             if 'CUDAExecutionProvider' in active_providers:
-                print("CUDA GPU verified, using GPU inference")
-                return 'cuda'
+                print("CUDA GPU verified, defaulting to CPU inference")
+                self.gpu_available = True
+                return 'cpu'
             else:
                 print("CUDA runtime not available, using CPU")
+                self.gpu_available = False
                 return 'cpu'
         except Exception as e:
             print(f"CUDA detection failed: {e}")
+            self.gpu_available = False
         print("Using CPU inference")
         return 'cpu'
 
     def _init_core_components(self):
         """初始化核心组件"""
         # 设备设置 - 自动检测GPU
+        self.gpu_available = False
         self.device = self._detect_device()
         self.model_mode = 'balanced'
         
@@ -148,6 +164,14 @@ class WorkoutTrackerApp(QMainWindow):
         
         # 创建运动追踪器
         self.workout_tracker = WorkoutTracker()
+
+    def _init_video_preferences(self):
+        """Keep camera state stable across model/device reloads."""
+        self.current_camera_id = 0
+        self.rotation_mode = True
+        self.mirror_mode = True
+        self.current_video_file = None
+        self.is_camera_source = True
         
     
     def _init_managers(self):
@@ -174,13 +198,16 @@ class WorkoutTrackerApp(QMainWindow):
         self.stats_manager.init_workout_stats()
 
         # 设置GPU开关初始状态
-        gpu_available = self.device == 'cuda'
+        gpu_available = getattr(self, "gpu_available", False)
         self.control_panel.set_gpu_available(gpu_available)
         
     
     def _init_state_variables(self):
         """初始化状态变量"""
         # 当前计数值
+        if getattr(self, '_state_initialized', False):
+            return
+        self._state_initialized = True
         self.current_count = 0
         
         # 手动计数追踪
@@ -195,7 +222,7 @@ class WorkoutTrackerApp(QMainWindow):
         # 镜像模式相关属性
         self.mirror_mode = True
     
-    def setup_ui(self):
+    def _setup_legacy_ui(self):
         """设置用户界面"""
         # 应用样式
         self.setPalette(AppStyles.get_window_palette())
@@ -205,6 +232,8 @@ class WorkoutTrackerApp(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
+        main_layout.setContentsMargins(18, 18, 18, 14)
+        main_layout.setSpacing(18)
         
         # 创建左侧区域（视频和运动统计）
         left_widget = QWidget()
@@ -242,6 +271,113 @@ class WorkoutTrackerApp(QMainWindow):
         # 连接控制面板信号
         self.connect_signals()
     
+    def setup_ui(self):
+        """Build the desktop training workbench."""
+        self.setPalette(AppStyles.get_window_palette())
+        self.setStyleSheet(AppStyles.get_global_stylesheet())
+
+        central_widget = QWidget()
+        central_widget.setObjectName("RootSurface")
+        self.setCentralWidget(central_widget)
+
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(16, 14, 16, 12)
+        main_layout.setSpacing(12)
+
+        self.top_bar = QFrame()
+        self.top_bar.setObjectName("TopBar")
+        top_layout = QHBoxLayout(self.top_bar)
+        top_layout.setContentsMargins(14, 8, 14, 8)
+        top_layout.setSpacing(12)
+
+        self.logo_label = QLabel()
+        self.logo_label.setObjectName("BrandLogo")
+        self.logo_label.setFixedSize(44, 44)
+        self.logo_label.setAlignment(Qt.AlignCenter)
+        logo_pixmap = QPixmap(self._asset_path("Logo.png"))
+        if not logo_pixmap.isNull():
+            self.logo_label.setPixmap(
+                logo_pixmap.scaled(34, 34, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            )
+        else:
+            self.logo_label.setText("G")
+
+        brand_layout = QVBoxLayout()
+        brand_layout.setContentsMargins(0, 0, 0, 0)
+        brand_layout.setSpacing(1)
+
+        self.brand_label = QLabel("Good-GYM")
+        self.brand_label.setObjectName("BrandLabel")
+        self.brand_subtitle = QLabel(T.get("app_subtitle"))
+        self.brand_subtitle.setObjectName("MutedLabel")
+        brand_layout.addWidget(self.brand_label)
+        brand_layout.addWidget(self.brand_subtitle)
+
+        top_layout.addWidget(self.logo_label)
+        top_layout.addLayout(brand_layout)
+        top_layout.addStretch()
+        main_layout.addWidget(self.top_bar)
+
+        self.content_stack = QStackedLayout()
+        self.content_stack.setContentsMargins(0, 0, 0, 0)
+        main_layout.addLayout(self.content_stack, 1)
+
+        self.workout_view = QWidget()
+        self.workout_view.setObjectName("WorkoutView")
+        workout_layout = QVBoxLayout(self.workout_view)
+        workout_layout.setContentsMargins(0, 0, 0, 0)
+        workout_layout.setSpacing(10)
+
+        self.workout_body = QSplitter(Qt.Horizontal)
+        self.workout_body.setObjectName("WorkoutSplitter")
+        self.workout_body.setChildrenCollapsible(False)
+        self.workout_body.setHandleWidth(8)
+
+        self.video_shell = QFrame()
+        self.video_shell.setObjectName("VideoShell")
+        self.video_shell.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        video_layout = QVBoxLayout(self.video_shell)
+        video_layout.setContentsMargins(12, 12, 12, 12)
+        video_layout.setSpacing(10)
+
+        video_header = QFrame()
+        video_header.setObjectName("VideoHeader")
+        video_header_layout = QHBoxLayout(video_header)
+        video_header_layout.setContentsMargins(4, 0, 4, 0)
+
+        self.video_title_label = QLabel(T.get("camera_feed"))
+        self.video_title_label.setObjectName("SectionTitle")
+        self.video_hint_label = QLabel(T.get("tracking_status"))
+        self.video_hint_label.setObjectName("MutedLabel")
+
+        video_header_layout.addWidget(self.video_title_label)
+        video_header_layout.addStretch()
+        video_header_layout.addWidget(self.video_hint_label)
+        video_layout.addWidget(video_header)
+
+        self.video_display = VideoDisplay()
+        video_layout.addWidget(self.video_display, 1)
+
+        self.status_rail = WorkoutStatusRail()
+        self.control_panel = ControlPanel()
+
+        self.workout_body.addWidget(self.video_shell)
+        self.workout_body.addWidget(self.status_rail)
+        self.workout_body.setStretchFactor(0, 1)
+        self.workout_body.setStretchFactor(1, 0)
+        self.workout_body.setSizes([980, 230])
+
+        workout_layout.addWidget(self.workout_body, 1)
+        workout_layout.addWidget(self.control_panel, 0)
+        self.content_stack.addWidget(self.workout_view)
+
+        self.statusBar = QStatusBar()
+        self.setStatusBar(self.statusBar)
+        self.statusBar.showMessage(T.get("ready"))
+
+        self.menu_manager.setup_menu_bar()
+        self.connect_signals()
+
     def connect_signals(self):
         """连接信号和槽"""
         # 连接控制面板信号
@@ -268,23 +404,41 @@ class WorkoutTrackerApp(QMainWindow):
     def setup_video_thread(self):
         """设置视频处理线程"""
         # 设置双分辨率：UI显示高分辨率，模型推理低分辨率
+        camera_id = getattr(self, "current_camera_id", 0)
+        rotate = getattr(self, "rotation_mode", True)
         self.video_thread = VideoThread(
-            camera_id=0,
-            rotate=True,
-            display_width=1920,
-            display_height=1080,
+            camera_id=camera_id,
+            rotate=rotate,
+            display_width=1280,
+            display_height=720,
             inference_width=640,
             inference_height=360
         )
         
         # 设置主窗口引用，用于存储推理帧
         self.video_thread.main_window = self
+        self.video_thread.set_mirror(getattr(self, "mirror_mode", True))
+        if hasattr(self, "video_display"):
+            self.video_display.set_orientation(portrait_mode=rotate)
         
         self.video_thread.change_pixmap_signal.connect(self.update_image)
         
         # 初始化FPS值和推理帧
         self.current_fps = 0
         self.current_inference_frame = None
+
+    def update_runtime_badge(self):
+        """Runtime badges were removed from the header."""
+        return
+
+    def update_language(self):
+        """Refresh static shell labels after switching language."""
+        if hasattr(self, "brand_subtitle"):
+            self.brand_subtitle.setText(T.get("app_subtitle"))
+        if hasattr(self, "video_title_label"):
+            self.video_title_label.setText(T.get("camera_feed"))
+        if hasattr(self, "video_hint_label"):
+            self.video_hint_label.setText(T.get("tracking_status"))
     
     def setup_animation_timer(self):
         """设置动画定时器"""
@@ -294,11 +448,20 @@ class WorkoutTrackerApp(QMainWindow):
     
     def start_video(self):
         """开始视频处理"""
-        self.video_thread.start()
+        if not hasattr(self, 'current_count'):
+            self._init_state_variables()
+        self.video_thread.set_rotation(getattr(self, "rotation_mode", True))
+        self.video_thread.set_mirror(self.mirror_mode)
+        if not self.video_thread.isRunning():
+            self.video_thread.start()
     
-    def update_image(self, frame, fps=0):
+    def update_image(self, frame, inference_frame=None, fps=0):
         """更新图像显示并处理姿态检测"""
-        self.video_processor.update_image(frame, fps)
+        try:
+            self.video_processor.update_image(frame, inference_frame, fps)
+        finally:
+            if hasattr(self.video_thread, "mark_frame_processed"):
+                self.video_thread.mark_frame_processed()
     
     def change_exercise(self, exercise_type):
         """更改运动类型"""

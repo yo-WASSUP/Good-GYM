@@ -15,6 +15,8 @@ class StatsManager:
         """初始化运动统计面板"""
         # 创建运动统计面板
         self.main_window.stats_panel = WorkoutStatsPanel()
+        if hasattr(self.main_window, "content_stack"):
+            self.main_window.content_stack.addWidget(self.main_window.stats_panel)
         self.main_window.stats_panel.setVisible(False)  # 初始不可见
         
         # 设置目标

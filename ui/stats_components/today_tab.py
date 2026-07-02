@@ -39,7 +39,7 @@ class TodayProgressTab(QWidget):
         # Create message label to display when no goals are set
         self.no_goals_label = QLabel(T.get("no_goals_message") if hasattr(T, "get") and callable(getattr(T, "get")) else "No exercise goals set")
         self.no_goals_label.setAlignment(Qt.AlignCenter)
-        self.no_goals_label.setStyleSheet("color: #7f8c8d; font-size: 16pt; margin: 20px;")
+        self.no_goals_label.setStyleSheet("color: #9AA8B6; font-size: 16pt; margin: 20px;")
         self.no_goals_label.setVisible(False)  # Hidden by default, wait for goal check to decide display
         progress_layout.addWidget(self.no_goals_label)
         
@@ -54,17 +54,17 @@ class TodayProgressTab(QWidget):
             }
             QScrollBar:vertical {
                 width: 14px;
-                background: #f0f0f0;
+                background: #101720;
                 margin: 2px;
                 border-radius: 7px;
             }
             QScrollBar::handle:vertical {
-                background: #bdc3c7;
+                background: #2A3644;
                 min-height: 40px;
                 border-radius: 7px;
             }
             QScrollBar::handle:vertical:hover {
-                background: #a0a0a0;
+                background: #4CE0B3;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0px;
@@ -90,7 +90,7 @@ class TodayProgressTab(QWidget):
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
                 separator.setFrameShadow(QFrame.Sunken)
-                separator.setStyleSheet("background-color: #e0e0e0; min-height: 1px; margin: 10px 0;")
+                separator.setStyleSheet("background-color: #263241; min-height: 1px; margin: 10px 0;")
                 container_layout.addWidget(separator)
             
             # Create exercise item container and record reference
@@ -125,7 +125,7 @@ class TodayProgressTab(QWidget):
             # Count label
             count_label = QLabel("0 / 0")
             count_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-            count_label.setStyleSheet("color: #2c3e50; font-size: 18pt;")
+            count_label.setStyleSheet("color: #C8D3DE; font-size: 18pt; font-weight: bold;")
             
             # Add label and count to layout
             header_layout.addWidget(label)
@@ -144,19 +144,19 @@ class TodayProgressTab(QWidget):
             progress_bar.setMinimumHeight(22)
             progress_bar.setStyleSheet(f"""
                 QProgressBar {{
-                    border: 1px solid #bdc3c7;
-                    border-radius: 10px;
+                    border: 1px solid #2A3644;
+                    border-radius: 8px;
                     text-align: center;
                     height: 25px;
-                    font-family: 'Microsoft YaHei';
+                    font-family: 'Segoe UI', 'Microsoft YaHei UI';
                     font-size: 14px;
                     font-weight: bold;
-                    color: #2c3e50;
-                    background-color: #f5f5f5;
+                    color: #C8D3DE;
+                    background-color: #101720;
                 }}
                 QProgressBar::chunk {{
                     background-color: {color};
-                    border-radius: 8px;
+                    border-radius: 7px;
                 }}
             """)
             
@@ -190,7 +190,7 @@ class TodayProgressTab(QWidget):
         # Total label
         total_label = QLabel(T.get("total_completion").format(count=0))
         total_label.setAlignment(Qt.AlignCenter)
-        total_label.setStyleSheet("color: #2c3e50; margin: 10px 0; padding: 10px; background-color: #f0f7ff; border-radius: 8px; font-size: 18pt;")
+        total_label.setStyleSheet("color: #E8EEF5; margin: 10px 0; padding: 10px; background-color: #101720; border: 1px solid #263241; border-radius: 8px; font-size: 18pt; font-weight: bold;")
         total_layout.addWidget(total_label)
         
         # Record reference
@@ -228,36 +228,36 @@ class TodayProgressTab(QWidget):
                 # Completed state - use success green progress bar
                 self.progress_bars[exercise_code].setStyleSheet(f"""
                     QProgressBar {{
-                        border: 1px solid #bdc3c7;
-                        border-radius: 10px;
+                        border: 1px solid #2A3644;
+                        border-radius: 8px;
                         text-align: center;
-                        font-family: 'Microsoft YaHei';
+                        font-family: 'Segoe UI', 'Microsoft YaHei UI';
                         font-size: 13px;
                         font-weight: bold;
-                        color: #2c3e50;
-                        background-color: #f5f5f5;
+                        color: #C8D3DE;
+                        background-color: #101720;
                     }}
                     QProgressBar::chunk {{
-                        background-color: #2ecc71;
-                        border-radius: 8px;
+                        background-color: #4CE0B3;
+                        border-radius: 7px;
                     }}
                 """)
             else:
                 # In progress state - use original color
                 self.progress_bars[exercise_code].setStyleSheet(f"""
                     QProgressBar {{
-                        border: 1px solid #bdc3c7;
-                        border-radius: 10px;
+                        border: 1px solid #2A3644;
+                        border-radius: 8px;
                         text-align: center;
-                        font-family: 'Microsoft YaHei';
+                        font-family: 'Segoe UI', 'Microsoft YaHei UI';
                         font-size: 13px;
                         font-weight: bold;
-                        color: #2c3e50;
-                        background-color: #f5f5f5;
+                        color: #C8D3DE;
+                        background-color: #101720;
                     }}
                     QProgressBar::chunk {{
                         background-color: {color};
-                        border-radius: 8px;
+                        border-radius: 7px;
                     }}
                 """)
             
@@ -341,18 +341,18 @@ class TodayProgressTab(QWidget):
             color = self.exercise_colors.get(self.exercise_name_map[exercise_code], "#3498db")
             self.progress_bars[exercise_code].setStyleSheet(f"""
                 QProgressBar {{
-                    border: 1px solid #bdc3c7;
-                    border-radius: 10px;
+                    border: 1px solid #2A3644;
+                    border-radius: 8px;
                     text-align: center;
-                    font-family: 'Microsoft YaHei';
+                    font-family: 'Segoe UI', 'Microsoft YaHei UI';
                     font-size: 13px;
                     font-weight: bold;
-                    color: #2c3e50;
-                    background-color: #f5f5f5;
+                    color: #C8D3DE;
+                    background-color: #101720;
                 }}
                 QProgressBar::chunk {{
                     background-color: {color};
-                    border-radius: 8px;
+                    border-radius: 7px;
                 }}
             """)
         

@@ -87,6 +87,8 @@ coverage.xml
 
 # Project-specific
 /output/
+/build_portable/
+/release/
 
 # Ignore OS files
 .DS_Store
