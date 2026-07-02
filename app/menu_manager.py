@@ -2,7 +2,15 @@
 菜单管理模块 - 负责菜单栏的设置和语言切换
 """
 
-from PyQt5.QtWidgets import QAction, QActionGroup, QMenu, QMessageBox
+from PyQt5.QtWidgets import (
+    QAction,
+    QActionGroup,
+    QDialog,
+    QDialogButtonBox,
+    QMenu,
+    QTextBrowser,
+    QVBoxLayout,
+)
 from core.translations import Translations as T
 
 class MenuManager:
@@ -88,7 +96,20 @@ class MenuManager:
     
     def show_about(self):
         """显示关于对话框"""
-        QMessageBox.about(self.main_window, T.get("about"), T.get("about_text"))
+        dialog = QDialog(self.main_window)
+        dialog.setWindowTitle(T.get("about"))
+        dialog.resize(520, 560)
+
+        layout = QVBoxLayout(dialog)
+        browser = QTextBrowser(dialog)
+        browser.setOpenExternalLinks(True)
+        browser.setHtml(T.get("about_html"))
+        layout.addWidget(browser)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok, dialog)
+        buttons.accepted.connect(dialog.accept)
+        layout.addWidget(buttons)
+        dialog.exec_()
     
     def change_language(self, language):
         """更改界面语言"""
