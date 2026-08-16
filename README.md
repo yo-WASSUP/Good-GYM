@@ -227,4 +227,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yo-WASSUP/Good-GYM&type=Date)](https://star-history.com/#yo-WASSUP/Good-GYM&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=yo-WASSUP/Good-GYM&type=Date)](https://star-history.dera.page/#yo-WASSUP/Good-GYM&type=date)
